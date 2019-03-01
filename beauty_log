@@ -1,0 +1,162 @@
+2019-03-01 14:33:15,246 [__main__-16870] INFO: Reading in data from data/train_test/beauty_data_info_train_competition_processed.csv....
+2019-03-01 14:33:16,646 [__main__-16870] INFO: Done reading in 286583 data....
+2019-03-01 14:33:16,646 [__main__-16870] INFO: Reading in data from data/train_test/beauty_data_info_val_competition_processed.csv....
+2019-03-01 14:33:16,833 [__main__-16870] INFO: Done reading in 76545 data....
+2019-03-01 14:33:16,969 [__main__-16870] INFO: Encoding labels....
+2019-03-01 14:34:22,839 [__main__-16870] INFO: Done encoding labels....
+==================================================
+Benefits
+==================================================
+2019-03-01 14:34:32.019234: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+Epoch 1/16
+1/1 [==============================] - 10s 10s/step - loss: 1.7803 - acc: 0.1800 - auc: 0.5306 - val_loss: 1.6099 - val_acc: 0.7632 - val_auc: 0.9245
+
+Epoch 00001: val_loss improved from inf to 1.60987, saving model to ./weights/Benefits_1.60987_1.78033_0001.weights.h5
+Epoch 2/16
+1/1 [==============================] - 0s 50ms/step - loss: 1.6265 - acc: 0.6840 - auc: 0.8691 - val_loss: 1.4134 - val_acc: 0.9342 - val_auc: 0.9873
+
+Epoch 00002: val_loss improved from 1.60987 to 1.41343, saving model to ./weights/Benefits_1.41343_1.62654_0002.weights.h5
+Epoch 3/16
+1/1 [==============================] - 0s 49ms/step - loss: 1.4563 - acc: 0.8240 - auc: 0.9554 - val_loss: 1.2338 - val_acc: 0.9342 - val_auc: 0.9856
+
+Epoch 00003: val_loss improved from 1.41343 to 1.23377, saving model to ./weights/Benefits_1.23377_1.45631_0003.weights.h5
+Epoch 4/16
+1/1 [==============================] - 0s 48ms/step - loss: 1.2873 - acc: 0.8880 - auc: 0.9672 - val_loss: 1.0423 - val_acc: 0.9474 - val_auc: 0.9924
+
+Epoch 00004: val_loss improved from 1.23377 to 1.04230, saving model to ./weights/Benefits_1.04230_1.28734_0004.weights.h5
+Epoch 5/16
+1/1 [==============================] - 0s 48ms/step - loss: 1.1430 - acc: 0.8640 - auc: 0.9714 - val_loss: 0.8640 - val_acc: 0.9474 - val_auc: 0.9933
+
+Epoch 00005: val_loss improved from 1.04230 to 0.86400, saving model to ./weights/Benefits_0.86400_1.14299_0005.weights.h5
+Epoch 6/16
+1/1 [==============================] - 0s 50ms/step - loss: 0.9990 - acc: 0.8800 - auc: 0.9761 - val_loss: 0.6976 - val_acc: 0.9474 - val_auc: 0.9977
+
+Epoch 00006: val_loss improved from 0.86400 to 0.69761, saving model to ./weights/Benefits_0.69761_0.99900_0006.weights.h5
+Epoch 7/16
+1/1 [==============================] - 0s 48ms/step - loss: 0.8566 - acc: 0.8880 - auc: 0.9822 - val_loss: 0.5696 - val_acc: 0.9474 - val_auc: 0.9959
+
+Epoch 00007: val_loss improved from 0.69761 to 0.56963, saving model to ./weights/Benefits_0.56963_0.85661_0007.weights.h5
+Epoch 8/16
+1/1 [==============================] - 0s 48ms/step - loss: 0.7421 - acc: 0.8840 - auc: 0.9805 - val_loss: 0.4562 - val_acc: 0.9474 - val_auc: 0.9977
+
+Epoch 00008: val_loss improved from 0.56963 to 0.45622, saving model to ./weights/Benefits_0.45622_0.74207_0008.weights.h5
+Epoch 9/16
+1/1 [==============================] - 0s 49ms/step - loss: 0.6392 - acc: 0.8920 - auc: 0.9824 - val_loss: 0.3784 - val_acc: 0.9474 - val_auc: 0.9968
+
+Epoch 00009: val_loss improved from 0.45622 to 0.37843, saving model to ./weights/Benefits_0.37843_0.63920_0009.weights.h5
+Epoch 10/16
+1/1 [==============================] - 0s 49ms/step - loss: 0.5462 - acc: 0.8960 - auc: 0.9865 - val_loss: 0.3127 - val_acc: 0.9474 - val_auc: 0.9975
+
+Epoch 00010: val_loss improved from 0.37843 to 0.31273, saving model to ./weights/Benefits_0.31273_0.54625_0010.weights.h5
+Epoch 11/16
+1/1 [==============================] - 0s 49ms/step - loss: 0.4705 - acc: 0.8880 - auc: 0.9883 - val_loss: 0.2661 - val_acc: 0.9474 - val_auc: 0.9979
+
+Epoch 00011: val_loss improved from 0.31273 to 0.26611, saving model to ./weights/Benefits_0.26611_0.47053_0011.weights.h5
+Epoch 12/16
+1/1 [==============================] - 0s 48ms/step - loss: 0.4133 - acc: 0.9080 - auc: 0.9893 - val_loss: 0.2189 - val_acc: 0.9474 - val_auc: 0.9983
+
+Epoch 00012: val_loss improved from 0.26611 to 0.21892, saving model to ./weights/Benefits_0.21892_0.41331_0012.weights.h5
+Epoch 13/16
+1/1 [==============================] - 0s 47ms/step - loss: 0.3627 - acc: 0.9040 - auc: 0.9914 - val_loss: 0.2052 - val_acc: 0.9474 - val_auc: 0.9981
+
+Epoch 00013: val_loss improved from 0.21892 to 0.20525, saving model to ./weights/Benefits_0.20525_0.36271_0013.weights.h5
+Epoch 14/16
+1/1 [==============================] - 0s 46ms/step - loss: 0.3179 - acc: 0.9080 - auc: 0.9932 - val_loss: 0.1820 - val_acc: 0.9605 - val_auc: 0.9984
+
+Epoch 00014: val_loss improved from 0.20525 to 0.18203, saving model to ./weights/Benefits_0.18203_0.31788_0014.weights.h5
+Epoch 15/16
+1/1 [==============================] - 0s 50ms/step - loss: 0.2824 - acc: 0.9200 - auc: 0.9944 - val_loss: 0.1668 - val_acc: 0.9605 - val_auc: 0.9983
+
+Epoch 00015: val_loss improved from 0.18203 to 0.16683, saving model to ./weights/Benefits_0.16683_0.28235_0015.weights.h5
+Epoch 16/16
+1/1 [==============================] - 0s 48ms/step - loss: 0.2500 - acc: 0.9280 - auc: 0.9957 - val_loss: 0.1597 - val_acc: 0.9605 - val_auc: 0.9985
+
+Epoch 00016: val_loss improved from 0.16683 to 0.15965, saving model to ./weights/Benefits_0.15965_0.24998_0016.weights.h5
+==================================================
+Brand
+==================================================
+Epoch 1/16
+741/741 [==============================] - 249s 337ms/step - loss: 0.4717 - acc: 0.9324 - auc: 0.9857 - val_loss: 0.0806 - val_acc: 0.9833 - val_auc: 0.9981
+
+Epoch 00001: val_loss improved from inf to 0.08060, saving model to ./weights/Brand_0.08060_0.47226_0001.weights.h5
+Epoch 2/16
+741/741 [==============================] - 239s 323ms/step - loss: 0.0533 - acc: 0.9875 - auc: 0.9992 - val_loss: 0.0652 - val_acc: 0.9856 - val_auc: 0.9981
+
+Epoch 00002: val_loss improved from 0.08060 to 0.06519, saving model to ./weights/Brand_0.06519_0.05341_0002.weights.h5
+Epoch 3/16
+741/741 [==============================] - 239s 323ms/step - loss: 0.0332 - acc: 0.9913 - auc: 0.9997 - val_loss: 0.0677 - val_acc: 0.9853 - val_auc: 0.9972
+
+Epoch 00003: val_loss did not improve from 0.06519
+Epoch 4/16
+741/741 [==============================] - 240s 323ms/step - loss: 0.0232 - acc: 0.9934 - auc: 0.9998 - val_loss: 0.0736 - val_acc: 0.9854 - val_auc: 0.9968
+
+Epoch 00004: val_loss did not improve from 0.06519
+Epoch 5/16
+741/741 [==============================] - 240s 324ms/step - loss: 0.0184 - acc: 0.9948 - auc: 0.9998 - val_loss: 0.0718 - val_acc: 0.9864 - val_auc: 0.9967
+
+Epoch 00005: val_loss did not improve from 0.06519
+Epoch 00005: early stopping
+==================================================
+Colour_group
+==================================================
+Epoch 1/16
+70/70 [==============================] - 35s 505ms/step - loss: 0.8003 - acc: 0.7542 - auc: 0.9442 - val_loss: 0.5587 - val_acc: 0.7888 - val_auc: 0.9734
+
+Epoch 00001: val_loss improved from inf to 0.55868, saving model to ./weights/Colour_group_0.55868_0.80174_0001.weights.h5
+Epoch 2/16
+70/70 [==============================] - 23s 328ms/step - loss: 0.3361 - acc: 0.8782 - auc: 0.9902 - val_loss: 0.5365 - val_acc: 0.8088 - val_auc: 0.9761
+
+Epoch 00002: val_loss improved from 0.55868 to 0.53648, saving model to ./weights/Colour_group_0.53648_0.33600_0002.weights.h5
+Epoch 3/16
+70/70 [==============================] - 23s 327ms/step - loss: 0.2623 - acc: 0.9030 - auc: 0.9940 - val_loss: 0.6022 - val_acc: 0.7926 - val_auc: 0.9717
+
+Epoch 00003: val_loss did not improve from 0.53648
+Epoch 4/16
+70/70 [==============================] - 23s 327ms/step - loss: 0.2247 - acc: 0.9165 - auc: 0.9954 - val_loss: 0.6514 - val_acc: 0.7913 - val_auc: 0.9683
+
+Epoch 00004: val_loss did not improve from 0.53648
+Epoch 5/16
+70/70 [==============================] - 23s 328ms/step - loss: 0.2035 - acc: 0.9237 - auc: 0.9962 - val_loss: 0.6881 - val_acc: 0.7853 - val_auc: 0.9651
+
+Epoch 00005: val_loss did not improve from 0.53648
+Epoch 00005: early stopping
+==================================================
+Product_texture
+==================================================
+Epoch 1/16
+449/449 [==============================] - 149s 332ms/step - loss: 0.1595 - acc: 0.9591 - auc: 0.9934 - val_loss: 0.0550 - val_acc: 0.9832 - val_auc: 0.9995
+
+Epoch 00001: val_loss improved from inf to 0.05505, saving model to ./weights/Product_texture_0.05505_0.15977_0001.weights.h5
+Epoch 2/16
+449/449 [==============================] - 133s 295ms/step - loss: 0.0409 - acc: 0.9868 - auc: 0.9998 - val_loss: 0.0613 - val_acc: 0.9804 - val_auc: 0.9991
+
+Epoch 00002: val_loss did not improve from 0.05505
+Epoch 3/16
+449/449 [==============================] - 132s 295ms/step - loss: 0.0316 - acc: 0.9893 - auc: 0.9998 - val_loss: 0.0628 - val_acc: 0.9819 - val_auc: 0.9987
+
+Epoch 00003: val_loss did not improve from 0.05505
+Epoch 4/16
+449/449 [==============================] - 136s 302ms/step - loss: 0.0273 - acc: 0.9911 - auc: 0.9997 - val_loss: 0.0649 - val_acc: 0.9825 - val_auc: 0.9984
+
+Epoch 00004: val_loss did not improve from 0.05505
+Epoch 00004: early stopping
+==================================================
+Skin_type
+==================================================
+Epoch 1/16
+154/154 [==============================] - 61s 396ms/step - loss: 0.8265 - acc: 0.7408 - auc: 0.9413 - val_loss: 0.5744 - val_acc: 0.8151 - val_auc: 0.9742
+
+Epoch 00001: val_loss improved from inf to 0.57439, saving model to ./weights/Skin_type_0.57439_0.82859_0001.weights.h5
+Epoch 2/16
+154/154 [==============================] - 46s 300ms/step - loss: 0.5049 - acc: 0.8304 - auc: 0.9808 - val_loss: 0.5825 - val_acc: 0.8160 - val_auc: 0.9734
+
+Epoch 00002: val_loss did not improve from 0.57439
+Epoch 3/16
+154/154 [==============================] - 46s 298ms/step - loss: 0.4417 - acc: 0.8499 - auc: 0.9853 - val_loss: 0.5929 - val_acc: 0.8181 - val_auc: 0.9723
+
+Epoch 00003: val_loss did not improve from 0.57439
+Epoch 4/16
+154/154 [==============================] - 46s 301ms/step - loss: 0.4132 - acc: 0.8583 - auc: 0.9869 - val_loss: 0.6058 - val_acc: 0.8156 - val_auc: 0.9711
+
+Epoch 00004: val_loss did not improve from 0.57439
+Epoch 00004: early stopping
