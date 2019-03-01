@@ -1,0 +1,271 @@
+2019-03-01 16:01:43,420 [__main__-17014] INFO: Reading in data from data/train_test/mobile_data_info_train_competition_processed.csv....
+2019-03-01 16:01:44,981 [__main__-17014] INFO: Done reading in 160330 data....
+2019-03-01 16:01:44,981 [__main__-17014] INFO: Reading in data from data/train_test/mobile_data_info_val_competition_processed.csv....
+2019-03-01 16:01:45,090 [__main__-17014] INFO: Done reading in 40417 data....
+2019-03-01 16:01:45,171 [__main__-17014] INFO: Encoding labels....
+2019-03-01 16:02:46,752 [__main__-17014] INFO: Done encoding labels....
+==================================================
+Operating System
+==================================================
+2019-03-01 16:02:57.306817: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+Epoch 1/16
+50/50 [==============================] - 25s 502ms/step - loss: 0.5637 - acc: 0.8499 - auc: 0.9642 - val_loss: 0.1889 - val_acc: 0.9488 - val_auc: 0.9933
+
+Epoch 00001: val_loss improved from inf to 0.18889, saving model to ./weights/Operating System_0.18889_0.57063_0001.weights.h5
+Epoch 2/16
+50/50 [==============================] - 15s 297ms/step - loss: 0.1281 - acc: 0.9616 - auc: 0.9977 - val_loss: 0.1675 - val_acc: 0.9543 - val_auc: 0.9943
+
+Epoch 00002: val_loss improved from 0.18889 to 0.16753, saving model to ./weights/Operating System_0.16753_0.12584_0002.weights.h5
+Epoch 3/16
+50/50 [==============================] - 15s 297ms/step - loss: 0.0794 - acc: 0.9761 - auc: 0.9990 - val_loss: 0.1948 - val_acc: 0.9492 - val_auc: 0.9910
+
+Epoch 00003: val_loss did not improve from 0.16753
+Epoch 4/16
+50/50 [==============================] - 15s 296ms/step - loss: 0.0572 - acc: 0.9807 - auc: 0.9995 - val_loss: 0.2270 - val_acc: 0.9448 - val_auc: 0.9893
+
+Epoch 00004: val_loss did not improve from 0.16753
+Epoch 5/16
+50/50 [==============================] - 15s 295ms/step - loss: 0.0483 - acc: 0.9846 - auc: 0.9996 - val_loss: 0.2818 - val_acc: 0.9297 - val_auc: 0.9870
+
+Epoch 00005: val_loss did not improve from 0.16753
+Epoch 00005: early stopping
+==================================================
+Features
+==================================================
+Epoch 1/16
+80/80 [==============================] - 35s 434ms/step - loss: 1.0234 - acc: 0.6443 - auc: 0.9062 - val_loss: 0.7842 - val_acc: 0.7040 - val_auc: 0.9485
+
+Epoch 00001: val_loss improved from inf to 0.78416, saving model to ./weights/Features_0.78416_1.02472_0001.weights.h5
+Epoch 2/16
+80/80 [==============================] - 23s 289ms/step - loss: 0.6050 - acc: 0.7752 - auc: 0.9693 - val_loss: 0.7824 - val_acc: 0.7040 - val_auc: 0.9488
+
+Epoch 00002: val_loss improved from 0.78416 to 0.78242, saving model to ./weights/Features_0.78242_0.60495_0002.weights.h5
+Epoch 3/16
+80/80 [==============================] - 23s 290ms/step - loss: 0.5035 - acc: 0.8049 - auc: 0.9785 - val_loss: 0.8145 - val_acc: 0.6993 - val_auc: 0.9473
+
+Epoch 00003: val_loss did not improve from 0.78242
+Epoch 4/16
+80/80 [==============================] - 23s 289ms/step - loss: 0.4441 - acc: 0.8267 - auc: 0.9831 - val_loss: 0.8976 - val_acc: 0.6812 - val_auc: 0.9396
+
+Epoch 00004: val_loss did not improve from 0.78242
+Epoch 5/16
+80/80 [==============================] - 23s 290ms/step - loss: 0.4043 - acc: 0.8419 - auc: 0.9858 - val_loss: 0.9010 - val_acc: 0.6935 - val_auc: 0.9417
+
+Epoch 00005: val_loss did not improve from 0.78242
+Epoch 00005: early stopping
+==================================================
+Network Connections
+==================================================
+Epoch 1/16
+42/42 [==============================] - 22s 515ms/step - loss: 0.6613 - acc: 0.7402 - auc: 0.9143 - val_loss: 0.3643 - val_acc: 0.8617 - val_auc: 0.9750
+
+Epoch 00001: val_loss improved from inf to 0.36433, saving model to ./weights/Network Connections_0.36433_0.66377_0001.weights.h5
+Epoch 2/16
+42/42 [==============================] - 10s 227ms/step - loss: 0.2992 - acc: 0.8825 - auc: 0.9834 - val_loss: 0.3338 - val_acc: 0.8741 - val_auc: 0.9788
+
+Epoch 00002: val_loss improved from 0.36433 to 0.33380, saving model to ./weights/Network Connections_0.33380_0.29987_0002.weights.h5
+Epoch 3/16
+42/42 [==============================] - 10s 226ms/step - loss: 0.2325 - acc: 0.9061 - auc: 0.9899 - val_loss: 0.3582 - val_acc: 0.8737 - val_auc: 0.9767
+
+Epoch 00003: val_loss did not improve from 0.33380
+Epoch 4/16
+42/42 [==============================] - 10s 228ms/step - loss: 0.2010 - acc: 0.9167 - auc: 0.9923 - val_loss: 0.4009 - val_acc: 0.8711 - val_auc: 0.9725
+
+Epoch 00004: val_loss did not improve from 0.33380
+Epoch 5/16
+42/42 [==============================] - 9s 225ms/step - loss: 0.1795 - acc: 0.9263 - auc: 0.9938 - val_loss: 0.4080 - val_acc: 0.8789 - val_auc: 0.9721
+
+Epoch 00005: val_loss did not improve from 0.33380
+Epoch 00005: early stopping
+==================================================
+Memory RAM
+==================================================
+Epoch 1/16
+115/115 [==============================] - 46s 403ms/step - loss: 0.7370 - acc: 0.7811 - auc: 0.9565 - val_loss: 0.4069 - val_acc: 0.8734 - val_auc: 0.9893
+
+Epoch 00001: val_loss improved from inf to 0.40693, saving model to ./weights/Memory RAM_0.40693_0.73894_0001.weights.h5
+Epoch 2/16
+115/115 [==============================] - 33s 285ms/step - loss: 0.3083 - acc: 0.8961 - auc: 0.9939 - val_loss: 0.4162 - val_acc: 0.8691 - val_auc: 0.9886
+
+Epoch 00002: val_loss did not improve from 0.40693
+Epoch 3/16
+115/115 [==============================] - 33s 286ms/step - loss: 0.2392 - acc: 0.9176 - auc: 0.9962 - val_loss: 0.4456 - val_acc: 0.8649 - val_auc: 0.9861
+
+Epoch 00003: val_loss did not improve from 0.40693
+Epoch 4/16
+115/115 [==============================] - 33s 287ms/step - loss: 0.2045 - acc: 0.9298 - auc: 0.9972 - val_loss: 0.4917 - val_acc: 0.8656 - val_auc: 0.9809
+
+Epoch 00004: val_loss did not improve from 0.40693
+Epoch 00004: early stopping
+==================================================
+Brand
+==================================================
+Epoch 1/16
+213/213 [==============================] - 79s 369ms/step - loss: 0.7110 - acc: 0.8701 - auc: 0.9773 - val_loss: 0.0909 - val_acc: 0.9785 - val_auc: 0.9992
+
+Epoch 00001: val_loss improved from inf to 0.09085, saving model to ./weights/Brand_0.09085_0.71256_0001.weights.h5
+Epoch 2/16
+213/213 [==============================] - 64s 300ms/step - loss: 0.0693 - acc: 0.9823 - auc: 0.9997 - val_loss: 0.0746 - val_acc: 0.9811 - val_auc: 0.9990
+
+Epoch 00002: val_loss improved from 0.09085 to 0.07458, saving model to ./weights/Brand_0.07458_0.06921_0002.weights.h5
+Epoch 3/16
+213/213 [==============================] - 64s 301ms/step - loss: 0.0350 - acc: 0.9902 - auc: 0.9999 - val_loss: 0.0822 - val_acc: 0.9800 - val_auc: 0.9981
+
+Epoch 00003: val_loss did not improve from 0.07458
+Epoch 4/16
+213/213 [==============================] - 64s 303ms/step - loss: 0.0234 - acc: 0.9933 - auc: 1.0000 - val_loss: 0.0934 - val_acc: 0.9787 - val_auc: 0.9968
+
+Epoch 00004: val_loss did not improve from 0.07458
+Epoch 5/16
+213/213 [==============================] - 65s 305ms/step - loss: 0.0186 - acc: 0.9946 - auc: 0.9999 - val_loss: 0.1006 - val_acc: 0.9779 - val_auc: 0.9965
+
+Epoch 00005: val_loss did not improve from 0.07458
+Epoch 00005: early stopping
+==================================================
+Warranty Period
+==================================================
+Epoch 1/16
+39/39 [==============================] - 25s 630ms/step - loss: 1.7452 - acc: 0.4743 - auc: 0.8666 - val_loss: 0.9608 - val_acc: 0.6836 - val_auc: 0.9650
+
+Epoch 00001: val_loss improved from inf to 0.96078, saving model to ./weights/Warranty Period_0.96078_1.74768_0001.weights.h5
+Epoch 2/16
+39/39 [==============================] - 9s 243ms/step - loss: 1.1122 - acc: 0.6475 - auc: 0.9475 - val_loss: 0.9524 - val_acc: 0.6941 - val_auc: 0.9628
+
+Epoch 00002: val_loss improved from 0.96078 to 0.95238, saving model to ./weights/Warranty Period_0.95238_1.11145_0002.weights.h5
+Epoch 3/16
+39/39 [==============================] - 9s 243ms/step - loss: 0.8666 - acc: 0.7125 - auc: 0.9702 - val_loss: 0.9536 - val_acc: 0.6853 - val_auc: 0.9615
+
+Epoch 00003: val_loss did not improve from 0.95238
+Epoch 4/16
+39/39 [==============================] - 9s 242ms/step - loss: 0.6996 - acc: 0.7625 - auc: 0.9812 - val_loss: 1.0656 - val_acc: 0.6605 - val_auc: 0.9531
+
+Epoch 00004: val_loss did not improve from 0.95238
+Epoch 5/16
+39/39 [==============================] - 9s 243ms/step - loss: 0.5818 - acc: 0.7968 - auc: 0.9871 - val_loss: 1.1725 - val_acc: 0.6519 - val_auc: 0.9436
+
+Epoch 00005: val_loss did not improve from 0.95238
+Epoch 00005: early stopping
+==================================================
+Storage Capacity
+==================================================
+Epoch 1/16
+54/54 [==============================] - 33s 616ms/step - loss: 0.7496 - acc: 0.7848 - auc: 0.9526 - val_loss: 0.2865 - val_acc: 0.9028 - val_auc: 0.9930
+
+Epoch 00001: val_loss improved from inf to 0.28648, saving model to ./weights/Storage Capacity_0.28648_0.75812_0001.weights.h5
+Epoch 2/16
+54/54 [==============================] - 17s 311ms/step - loss: 0.2003 - acc: 0.9326 - auc: 0.9964 - val_loss: 0.2621 - val_acc: 0.9116 - val_auc: 0.9934
+
+Epoch 00002: val_loss improved from 0.28648 to 0.26209, saving model to ./weights/Storage Capacity_0.26209_0.19968_0002.weights.h5
+Epoch 3/16
+54/54 [==============================] - 17s 309ms/step - loss: 0.1324 - acc: 0.9542 - auc: 0.9985 - val_loss: 0.2877 - val_acc: 0.9068 - val_auc: 0.9914
+
+Epoch 00003: val_loss did not improve from 0.26209
+Epoch 4/16
+54/54 [==============================] - 17s 311ms/step - loss: 0.1104 - acc: 0.9601 - auc: 0.9988 - val_loss: 0.3303 - val_acc: 0.8976 - val_auc: 0.9891
+
+Epoch 00004: val_loss did not improve from 0.26209
+Epoch 5/16
+54/54 [==============================] - 17s 311ms/step - loss: 0.0956 - acc: 0.9651 - auc: 0.9991 - val_loss: 0.3430 - val_acc: 0.8949 - val_auc: 0.9878
+
+Epoch 00005: val_loss did not improve from 0.26209
+Epoch 00005: early stopping
+==================================================
+Color Family
+==================================================
+Epoch 1/16
+90/90 [==============================] - 45s 501ms/step - loss: 1.4266 - acc: 0.6069 - auc: 0.9320 - val_loss: 0.8656 - val_acc: 0.7072 - val_auc: 0.9806
+
+Epoch 00001: val_loss improved from inf to 0.86562, saving model to ./weights/Color Family_0.86562_1.43407_0001.weights.h5
+Epoch 2/16
+90/90 [==============================] - 28s 310ms/step - loss: 0.5772 - acc: 0.8142 - auc: 0.9906 - val_loss: 0.7567 - val_acc: 0.7430 - val_auc: 0.9837
+
+Epoch 00002: val_loss improved from 0.86562 to 0.75672, saving model to ./weights/Color Family_0.75672_0.57929_0002.weights.h5
+Epoch 3/16
+90/90 [==============================] - 28s 310ms/step - loss: 0.4096 - acc: 0.8603 - auc: 0.9954 - val_loss: 0.8419 - val_acc: 0.7333 - val_auc: 0.9788
+
+Epoch 00003: val_loss did not improve from 0.75672
+Epoch 4/16
+90/90 [==============================] - 28s 309ms/step - loss: 0.3276 - acc: 0.8873 - auc: 0.9970 - val_loss: 0.9242 - val_acc: 0.7344 - val_auc: 0.9715
+
+Epoch 00004: val_loss did not improve from 0.75672
+Epoch 5/16
+90/90 [==============================] - 28s 309ms/step - loss: 0.2790 - acc: 0.9031 - auc: 0.9979 - val_loss: 0.9860 - val_acc: 0.7297 - val_auc: 0.9658
+
+Epoch 00005: val_loss did not improve from 0.75672
+Epoch 00005: early stopping
+==================================================
+Phone Model
+==================================================
+Epoch 1/16
+285/285 [==============================] - 131s 461ms/step - loss: 1.3554 - acc: 0.8017 - auc: 0.9550 - val_loss: 0.2541 - val_acc: 0.9526 - val_auc: 0.9959
+
+Epoch 00001: val_loss improved from inf to 0.25412, saving model to ./weights/Phone Model_0.25412_1.35590_0001.weights.h5
+Epoch 2/16
+285/285 [==============================] - 113s 395ms/step - loss: 0.1789 - acc: 0.9660 - auc: 0.9965 - val_loss: 0.1701 - val_acc: 0.9643 - val_auc: 0.9959
+
+Epoch 00002: val_loss improved from 0.25412 to 0.17013, saving model to ./weights/Phone Model_0.17013_0.17894_0002.weights.h5
+Epoch 3/16
+285/285 [==============================] - 115s 403ms/step - loss: 0.1046 - acc: 0.9767 - auc: 0.9988 - val_loss: 0.1565 - val_acc: 0.9650 - val_auc: 0.9952
+
+Epoch 00003: val_loss improved from 0.17013 to 0.15654, saving model to ./weights/Phone Model_0.15654_0.10461_0003.weights.h5
+Epoch 4/16
+285/285 [==============================] - 113s 396ms/step - loss: 0.0710 - acc: 0.9820 - auc: 0.9995 - val_loss: 0.1555 - val_acc: 0.9662 - val_auc: 0.9945
+
+Epoch 00004: val_loss improved from 0.15654 to 0.15548, saving model to ./weights/Phone Model_0.15548_0.07101_0004.weights.h5
+Epoch 5/16
+285/285 [==============================] - 110s 387ms/step - loss: 0.0530 - acc: 0.9858 - auc: 0.9997 - val_loss: 0.1638 - val_acc: 0.9655 - val_auc: 0.9932
+
+Epoch 00005: val_loss did not improve from 0.15548
+Epoch 6/16
+285/285 [==============================] - 111s 388ms/step - loss: 0.0446 - acc: 0.9876 - auc: 0.9998 - val_loss: 0.1702 - val_acc: 0.9662 - val_auc: 0.9925
+
+Epoch 00006: val_loss did not improve from 0.15548
+Epoch 7/16
+285/285 [==============================] - 111s 388ms/step - loss: 0.0392 - acc: 0.9888 - auc: 0.9998 - val_loss: 0.1801 - val_acc: 0.9653 - val_auc: 0.9909
+
+Epoch 00007: val_loss did not improve from 0.15548
+Epoch 00007: early stopping
+==================================================
+Camera
+==================================================
+Epoch 1/16
+44/44 [==============================] - 30s 671ms/step - loss: 1.7963 - acc: 0.4634 - auc: 0.8731 - val_loss: 1.1853 - val_acc: 0.6092 - val_auc: 0.9487
+
+Epoch 00001: val_loss improved from inf to 1.18533, saving model to ./weights/Camera_1.18533_1.80429_0001.weights.h5
+Epoch 2/16
+44/44 [==============================] - 10s 232ms/step - loss: 0.9205 - acc: 0.6886 - auc: 0.9677 - val_loss: 1.0942 - val_acc: 0.6108 - val_auc: 0.9566
+
+Epoch 00002: val_loss improved from 1.18533 to 1.09422, saving model to ./weights/Camera_1.09422_0.92135_0002.weights.h5
+Epoch 3/16
+44/44 [==============================] - 10s 234ms/step - loss: 0.7047 - acc: 0.7576 - auc: 0.9812 - val_loss: 1.1419 - val_acc: 0.6157 - val_auc: 0.9527
+
+Epoch 00003: val_loss did not improve from 1.09422
+Epoch 4/16
+44/44 [==============================] - 10s 236ms/step - loss: 0.5792 - acc: 0.7947 - auc: 0.9874 - val_loss: 1.2090 - val_acc: 0.6132 - val_auc: 0.9484
+
+Epoch 00004: val_loss did not improve from 1.09422
+Epoch 5/16
+44/44 [==============================] - 11s 239ms/step - loss: 0.5039 - acc: 0.8208 - auc: 0.9905 - val_loss: 1.3022 - val_acc: 0.6108 - val_auc: 0.9410
+
+Epoch 00005: val_loss did not improve from 1.09422
+Epoch 00005: early stopping
+==================================================
+Phone Screen Size
+==================================================
+Epoch 1/16
+82/82 [==============================] - 47s 572ms/step - loss: 1.0766 - acc: 0.6153 - auc: 0.8660 - val_loss: 0.7823 - val_acc: 0.7240 - val_auc: 0.9377
+
+Epoch 00001: val_loss improved from inf to 0.78234, saving model to ./weights/Phone Screen Size_0.78234_1.07766_0001.weights.h5
+Epoch 2/16
+82/82 [==============================] - 25s 304ms/step - loss: 0.6235 - acc: 0.7741 - auc: 0.9604 - val_loss: 0.7929 - val_acc: 0.7240 - val_auc: 0.9384
+
+Epoch 00002: val_loss did not improve from 0.78234
+Epoch 3/16
+82/82 [==============================] - 25s 304ms/step - loss: 0.5221 - acc: 0.8045 - auc: 0.9717 - val_loss: 0.8324 - val_acc: 0.7142 - val_auc: 0.9360
+
+Epoch 00003: val_loss did not improve from 0.78234
+Epoch 4/16
+82/82 [==============================] - 25s 305ms/step - loss: 0.4625 - acc: 0.8280 - auc: 0.9777 - val_loss: 0.8748 - val_acc: 0.7169 - val_auc: 0.9332
+
+Epoch 00004: val_loss did not improve from 0.78234
+Epoch 00004: early stopping
