@@ -25,3 +25,18 @@ python -m ocr_mp -f beauty_data_info_train_competition_ocr.csv -i img/ -s 10 -e 
 * Ziqing: `-s 40000 -e 79999`
 * Shande:  `-s 80000 -e 119999`
 * Zhiwei:  `-s 120000`
+
+#### Sample Command for select_by_attributes.py
+
+E.g. select those rows where either colour_group or skin_type is not NA. Rows with all selected attributes being NA will be dropped.
+Attribute names are not case sensitive.
+
+```.sh
+python -m select_by_attributes -f beauty_data_info_train_competition.csv -a colour_group skin_type
+```
+
+If the attribute name has white space, use `""`
+
+```.sh
+python -m select_by_attributes -f mobile_data_info_train_competition.csv  -a features "warranty period" "color family" camera "phone screen size"
+```
