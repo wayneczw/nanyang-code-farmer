@@ -11,3 +11,4 @@ matplotlib==3.0.2
 opencv_python==4.0.0.21
 Keras==2.2.4
 scikit_learn==0.20.2
+pytesseract==0.2.6 
