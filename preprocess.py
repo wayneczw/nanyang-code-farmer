@@ -41,9 +41,9 @@ def get_continuous_chunks(text):
 
     for subtree in chunked:
         if type(subtree) == Tree:
-            current_chunk.append("-".join([token for token, pos in subtree.leaves()]))
+            current_chunk.append(" ".join([token for token, pos in subtree.leaves()]))
         elif current_chunk:
-            named_entity = "-".join(current_chunk)
+            named_entity = " ".join(current_chunk)
             if named_entity not in continuous_chunk:
                 continuous_chunk.append(named_entity)
                 current_chunk = []
@@ -88,7 +88,6 @@ def read(df_path, quick=False):
         langs = [lang for lang in langs]
     #end with
     df['lang'] = pd.Series(langs)
-    #end try
     logger.info("Done detecting language....")
 
     # # Translation
@@ -98,16 +97,12 @@ def read(df_path, quick=False):
 
     # Get number/unit
     logger.info("Extracting number/unit....")
-    try:
-        with mp.Pool(ncores) as pool:
-            numbers = pool.imap(get_num, df['title'], chunksize=10)
-            numbers = [num for num in numbers]
-        #end with
-        df['numbers'] = pd.Series(numbers)
-    except UnboundLocalError:
-        df['numbers'] = df['title'].apply(lambda text: get_num(text))
+    with mp.Pool(ncores) as pool:
+        numbers = pool.imap(get_num, df['title'], chunksize=10)
+        numbers = [num for num in numbers]
+    #end with
+    df['numbers'] = pd.Series(numbers)
     #end try
-
     logger.info("Done extracting number/unit....")
 
     # Get NP
@@ -117,7 +112,6 @@ def read(df_path, quick=False):
         nouns = [noun for noun in nouns]
     #end with
     df['nouns'] = pd.Series(nouns)
-    # df['nouns'] = df['title'].apply(lambda sent: get_continuous_chunks(sent))
     logger.info("Done extracting noun phrases....")
 
     df[categorical_features] = df[categorical_features].fillna('unk')

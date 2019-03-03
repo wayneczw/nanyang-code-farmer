@@ -251,7 +251,7 @@ def build_model(
 
     model.compile(optimizer=optimizers.Adam(0.0005, decay=1e-6),
                   loss='categorical_crossentropy',
-                  metrics=['accuracy', auc])
+                  metrics=['accuracy'])
 
     return model
 #end def
@@ -318,7 +318,7 @@ def train(
     # define early stopping callback
     callbacks_list = []
     if y_val is not None:
-        early_stopping = dict(monitor='val_loss', patience=3, min_delta=0.0001, verbose=1)
+        early_stopping = dict(monitor='val_loss', patience=2, min_delta=0.0001, verbose=1)
         model_checkpoint = dict(filepath=weights_path + weights_prefix + '_{val_loss:.5f}_{loss:.5f}_{epoch:04d}.weights.h5',
                                 save_best_only=True,
                                 save_weights_only=True,
