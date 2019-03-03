@@ -81,29 +81,29 @@ def read(df_path, quick=False):
     df = pd.read_csv(df_path)
     if quick: df = df[:1024]
 
-    # # Lang Detection
-    # logger.info("Detecting language....")
-    # with mp.Pool(ncores) as pool:
-    #     langs = pool.imap(get_lang, df['title'], chunksize=10)
-    #     langs = [lang for lang in langs]
-    # #end with
-    # df['lang'] = pd.Series(langs)
-    # logger.info("Done detecting language....")
+    # Lang Detection
+    logger.info("Detecting language....")
+    with mp.Pool(ncores) as pool:
+        langs = pool.imap(get_lang, df['title'], chunksize=10)
+        langs = [lang for lang in langs]
+    #end with
+    df['lang'] = pd.Series(langs)
+    logger.info("Done detecting language....")
 
     # # Translation
     # logger.info('Translating....')
     # df['title'] = df.apply(lambda x: to_en(x.title) if x.lang == 'id' else x.title, axis=1)
     # logger.info("Done translating....")
 
-    # # Get number/unit
-    # logger.info("Extracting number/unit....")
-    # with mp.Pool(ncores) as pool:
-    #     numbers = pool.imap(get_num, df['title'], chunksize=10)
-    #     numbers = [num for num in numbers]
-    # #end with
-    # df['numbers'] = pd.Series(numbers)
-    # #end try
-    # logger.info("Done extracting number/unit....")
+    # Get number/unit
+    logger.info("Extracting number/unit....")
+    with mp.Pool(ncores) as pool:
+        numbers = pool.imap(get_num, df['title'], chunksize=10)
+        numbers = [num for num in numbers]
+    #end with
+    df['numbers'] = pd.Series(numbers)
+    #end try
+    logger.info("Done extracting number/unit....")
 
     # Get NP
     logger.info("Extracting noun phrases....")
@@ -136,8 +136,7 @@ def main():
 
     for f in A.files:
         df = read(f, quick=quick)
-        # df.to_csv(f.split('.csv')[0] + '_processed.csv', index=False)
-        df.to_csv(f, index=False)
+        df.to_csv(f.split('.csv')[0] + '_processed.csv', index=False)
 #end def
 
 if __name__ == '__main__': main()
