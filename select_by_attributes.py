@@ -15,6 +15,7 @@ def check_attributes(df, attributes):
 
 def select_rows(df, attributes):
     df.columns = map(str.lower, df.columns)
+    attributes = map(str.lower, attributes)
     df = df.dropna(axis=0, subset=attributes, how='all')
     return df
 
