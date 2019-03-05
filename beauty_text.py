@@ -485,8 +485,9 @@ def main():
         lb_dict[y] = LabelBinarizer()
         proportion = max(1 / len(mapping_dict[y]), 0.03)
         to_be_trained_df = train_df.loc[train_df[y] != 'unk']
-        to_be_trained_df = undersampling(
-            to_be_trained_df, y, proportion)
+        if y == 'Benefits':
+            to_be_trained_df = undersampling(
+                to_be_trained_df, y, proportion)
 
         train_dict['X_' + y + '_train_index'] = list(to_be_trained_df.index.values)
         train_dict['y_' + y + '_train'] = lb_dict[y].fit_transform(to_be_trained_df[y][train_dict['X_' + y + '_train_index']])
