@@ -503,26 +503,36 @@ def main():
         print('='*50)
         print(y)
         print('='*50)
-        title_vec = TfidfVectorizer(
+        # title_vec = TfidfVectorizer(
+        #     max_features=16384,
+        #     sublinear_tf=True,
+        #     strip_accents='unicode',
+        #     stop_words='english',
+        #     analyzer='word',
+        #     token_pattern=r'\w{1,}',
+        #     ngram_range=(1, 4),
+        #     dtype=np.float32,
+        #     norm='l2',
+        #     min_df=5,
+        #     max_df=.9)
+        title_vec = CountVectorizer(
             max_features=8192,
-            sublinear_tf=True,
             strip_accents='unicode',
             stop_words='english',
             analyzer='word',
             token_pattern=r'\w{1,}',
             ngram_range=(1, 4),
             dtype=np.float32,
-            norm='l2',
             min_df=5,
             max_df=.9)
 
         nouns_vec = CountVectorizer(
-            max_features=1024,
+            max_features=2056,
             strip_accents='unicode',
             stop_words='english',
             analyzer='word',
             token_pattern=r'\w{1,}',
-            ngram_range=(1, 2),
+            ngram_range=(1, 3),
             dtype=np.float32,
             min_df=5,
             max_df=.9)
@@ -556,7 +566,8 @@ def main():
 
         train_dict['model'] = model
         train_dict['y_train'] = train_dict['y_' + y + '_train']
-        train_dict['y_val'] = train_dict['y_' + y + '_val']
+        if validate:
+            train_dict['y_val'] = train_dict['y_' + y + '_val']
         train_dict['weights_prefix'] = y
         model = train(**train_dict)
 
