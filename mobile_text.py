@@ -45,18 +45,18 @@ logger = logging.getLogger(__name__)
 
 
 raw_categorical_targets = [
-    'Operating System', 'Features',
+    'Brand', 'Phone Model', 'Operating System', 'Features',
     'Network Connections', 'Memory RAM',
-    'Brand', 'Warranty Period',
+    'Warranty Period',
     'Storage Capacity', 'Color Family',
-    'Phone Model', 'Camera', 'Phone Screen Size']
+    'Camera', 'Phone Screen Size']
 
 categorical_targets = [
-    'Operating System', 'Features',
+    'Brand', 'Phone Model', 'Operating System', 'Features',
     'Network Connections', 'Memory RAM',
-    'Brand', 'Warranty Period',
+    'Warranty Period',
     'Storage Capacity', 'Color Family',
-    'Phone Model', 'Camera', 'Phone Screen Size']
+    'Camera', 'Phone Screen Size']
 
 categorical_features = [
     'nouns', 'numbers']
@@ -228,6 +228,8 @@ def build_model(
     nouns_input_shape,
     numbers_input_shape,
     output_shape,
+    brand_input_shape=None,
+    model_input_shape=None,
     dropout_rate=0, kernel_regularizer=0,
     activity_regularizer=0, bias_regularizer=0):
     
@@ -245,11 +247,30 @@ def build_model(
     numbers = Dense(256)(numbers_input)
     numbers = Dropout(dropout_rate)(numbers)
 
-    x = concatenate([title, nouns, numbers])
+    inputs = [title_input, nouns_input, numbers_input]
+
+    if brand_input_shape is not None:
+        brand_input = Input(brand_input_shape, name='brand_input')
+        brand = Dense(128)(brand_input)
+        brand = Dropout(dropout_rate)(brand)
+        inputs.append(brand_input)
+
+    if model_input_shape is not None:
+        model_input = Input(model_input_shape, name='model_input')
+        model = Dense(128)(model_input)
+        model = Dropout(dropout_rate)(model)
+        inputs.append(model_input)
+
+    if brand_input_shape is not None and model_input_shape is not None:
+        x = concatenate([title, nouns, numbers, brand, model])
+    elif brand_input_shape is not None:
+        x = concatenate([title, nouns, numbers, brand])
+    else:
+        x = concatenate([title, nouns, numbers])
 
     output = Dense(output_shape, activation='softmax', name='output')(x)
 
-    model = Model(inputs=[title_input, nouns_input, numbers_input], outputs=[output])
+    model = Model(inputs=inputs, outputs=[output])
 
     model.compile(optimizer=optimizers.Adam(0.0005, decay=1e-6),
                   loss='categorical_crossentropy',
@@ -262,6 +283,7 @@ def build_model(
 def batch_iter(
     X_title, X_nouns, X_numbers,
     y,
+    X_brand=None, X_model=None,
     batch_size=128, **kwargs):
 
     data_size = y.shape[0]
@@ -281,10 +303,33 @@ def batch_iter(
                 X_numbers_batch = [x for x in X_numbers[start_index:end_index]]
                 y_batch = [y[i] for i in shuffled_indices[start_index:end_index]]
 
-                yield ({'title_input': np.asarray(X_title_batch),
-                        'nouns_input': np.asarray(X_nouns_batch),
-                        'numbers_input': np.asarray(X_numbers_batch)},
-                        {'output': np.asarray(y_batch)})
+                if X_brand is not None:
+                    X_brand_batch = [x for x in X_brand[start_index:end_index]]
+                if X_model is not None:
+                    X_model_batch = [x for x in X_model[start_index:end_index]]
+                
+                if X_model is not None:
+                    yield ({'title_input': np.asarray(X_title_batch),
+                            'nouns_input': np.asarray(X_nouns_batch),
+                            'numbers_input': np.asarray(X_numbers_batch),
+                            'brand_input': np.asarray(X_brand_batch),
+                            'model_input': np.asarray(X_model_batch),
+                            },
+                            {'output': np.asarray(y_batch)})
+                elif X_brand is not None:
+                    yield ({'title_input': np.asarray(X_title_batch),
+                            'nouns_input': np.asarray(X_nouns_batch),
+                            'numbers_input': np.asarray(X_numbers_batch),
+                            'brand_input': np.asarray(X_brand_batch),
+                            },
+                            {'output': np.asarray(y_batch)})
+                else:
+                    yield ({'title_input': np.asarray(X_title_batch),
+                            'nouns_input': np.asarray(X_nouns_batch),
+                            'numbers_input': np.asarray(X_numbers_batch)
+                            },
+                            {'output': np.asarray(y_batch)})
+                #end if
             #end for
         #end while
     #end def
@@ -297,7 +342,10 @@ def train(
     model,
     X_title_train, X_nouns_train, X_numbers_train,
     y_train,
-    X_title_val=None, X_nouns_val=None, X_numbers_val=None, y_val=None,
+    X_brand_train=None, X_model_train=None,
+    X_title_val=None, X_nouns_val=None, X_numbers_val=None,
+    y_val=None,
+    X_brand_val=None, X_model_val=None,
     weights_path='./weights/', weights_prefix='',
     class_weight=None, batch_size=128, epochs=32, **kwargs):
 
@@ -310,11 +358,13 @@ def train(
 
     train_steps, train_batches = batch_iter(
         X_title_train, X_nouns_train, X_numbers_train, y_train,
+        X_brand_train, X_model_train,
         batch_size=batch_size)
 
     if y_val is not None:
         val_steps, val_batches = batch_iter(
             X_title_val, X_nouns_val, X_numbers_val, y_val,
+            X_brand_val, X_model_val,
             batch_size=batch_size)
 
     # define early stopping callback
@@ -365,6 +415,7 @@ def train(
 
 def predict_iter(
     X_title, X_nouns, X_numbers,
+    X_brand=None, X_model=None,
     batch_size=128, **kwargs):
 
     data_size = X_title.shape[0]
@@ -378,9 +429,30 @@ def predict_iter(
             X_title_batch = [x for x in X_title[start_index:end_index]]
             X_nouns_batch = [x for x in X_nouns[start_index:end_index]]
             X_numbers_batch = [x for x in X_numbers[start_index:end_index]]
-            yield ({'title_input': np.asarray(X_title_batch),
-                    'nouns_input': np.asarray(X_nouns_batch),
-                    'numbers_input': np.asarray(X_numbers_batch)})
+            if X_brand is not None:
+                X_brand_batch = [x for x in X_brand[start_index:end_index]]
+            if X_model is not None:
+                X_model_batch = [x for x in X_model[start_index:end_index]]
+            
+            if X_model is not None:
+                yield ({'title_input': np.asarray(X_title_batch),
+                        'nouns_input': np.asarray(X_nouns_batch),
+                        'numbers_input': np.asarray(X_numbers_batch),
+                        'brand_input': np.asarray(X_brand_batch),
+                        'model_input': np.asarray(X_model_batch),
+                        })
+            elif X_brand is not None:
+                yield ({'title_input': np.asarray(X_title_batch),
+                        'nouns_input': np.asarray(X_nouns_batch),
+                        'numbers_input': np.asarray(X_numbers_batch),
+                        'brand_input': np.asarray(X_brand_batch),
+                        })
+            else:
+                yield ({'title_input': np.asarray(X_title_batch),
+                        'nouns_input': np.asarray(X_nouns_batch),
+                        'numbers_input': np.asarray(X_numbers_batch)
+                        })
+            #end if
         #end for
     #end def
 
@@ -392,6 +464,7 @@ def test(
     model,
     X_title_test, X_nouns_test, X_numbers_test,
     lb, mapping,
+    X_brand_test=None, X_model_test=None,
     batch_size=128, **kwargs):
 
     def _second_largest(numbers):
@@ -413,6 +486,7 @@ def test(
 
     test_steps, test_batches = predict_iter(
         X_title_test, X_nouns_test, X_numbers_test,
+        X_brand_test, X_model_test,
         batch_size=batch_size, **kwargs)
 
     proba = model.predict_generator(generator=test_batches, steps=test_steps)
@@ -487,8 +561,8 @@ def main():
         lb_dict[y] = LabelBinarizer()
         proportion = max(1 / len(mapping_dict[y]), 0.03)
         to_be_trained_df = train_df.loc[train_df[y] != 'unk']
-        to_be_trained_df = undersampling(
-            to_be_trained_df, y, proportion)
+        # to_be_trained_df = undersampling(
+        #     to_be_trained_df, y, proportion)
 
         train_dict['X_' + y + '_train_index'] = list(to_be_trained_df.index.values)
         train_dict['y_' + y + '_train'] = lb_dict[y].fit_transform(to_be_trained_df[y][train_dict['X_' + y + '_train_index']])
@@ -505,26 +579,37 @@ def main():
         print('='*50)
         print(y)
         print('='*50)
-        title_vec = TfidfVectorizer(
+        # title_vec = TfidfVectorizer(
+        #     max_features=8192,
+        #     sublinear_tf=True,
+        #     strip_accents='unicode',
+        #     stop_words='english',
+        #     analyzer='word',
+        #     token_pattern=r'\w{1,}',
+        #     ngram_range=(1, 4),
+        #     dtype=np.float32,
+        #     norm='l2',
+        #     min_df=5,
+        #     max_df=.9)
+
+        title_vec = CountVectorizer(
             max_features=8192,
-            sublinear_tf=True,
             strip_accents='unicode',
             stop_words='english',
             analyzer='word',
             token_pattern=r'\w{1,}',
             ngram_range=(1, 4),
             dtype=np.float32,
-            norm='l2',
             min_df=5,
             max_df=.9)
 
         nouns_vec = CountVectorizer(
-            max_features=1024,
+            max_features=2056,
             strip_accents='unicode',
             stop_words='english',
             analyzer='word',
             token_pattern=r'\w{1,}',
-            ngram_range=(1, 2),
+            ngram_range=(1, 3),
             dtype=np.float32,
             min_df=5,
             max_df=.9)
@@ -544,21 +629,38 @@ def main():
         train_dict['X_nouns_train'] = nouns_vec.fit_transform(train_df['nouns'][train_dict['X_' + y + '_train_index']]).toarray()
         train_dict['X_numbers_train'] = numbers_vec.fit_transform(train_df['numbers'][train_dict['X_' + y + '_train_index']]).toarray()
 
+        brand_input_shape = None
+        model_input_shape = None
+
+        if y != 'Brand':
+            train_dict['X_brand_train'] = lb_dict['Brand'].transform(train_df['Brand'][train_dict['X_' + y + '_train_index']])
+            brand_input_shape = train_dict['X_brand_train'].shape[1:]
+            if y != 'Phone Model':
+                train_dict['X_model_train'] = lb_dict['Phone Model'].transform(train_df['Phone Model'][train_dict['X_' + y + '_train_index']])
+                model_input_shape = train_dict['X_model_train'].shape[1:]
+
         if validate:
             train_dict['X_title_val'] = title_vec.transform(val_df['title'][train_dict['X_' + y + '_val_index']]).toarray()
             train_dict['X_nouns_val'] = nouns_vec.transform(val_df['nouns'][train_dict['X_' + y + '_val_index']]).toarray()
             train_dict['X_numbers_val'] = numbers_vec.transform(val_df['numbers'][train_dict['X_' + y + '_val_index']]).toarray()
+            if y != 'Brand':
+                train_dict['X_brand_val'] = lb_dict['Brand'].transform(train_df['Brand'][train_dict['X_' + y + '_val_index']])
+                if y != 'Phone Model':
+                    train_dict['X_model_val'] = lb_dict['Phone Model'].transform(train_df['Phone Model'][train_dict['X_' + y + '_val_index']])
 
         model = build_model(
             title_input_shape=train_dict['X_title_train'].shape[1:],
             nouns_input_shape=train_dict['X_nouns_train'].shape[1:],
             numbers_input_shape=train_dict['X_numbers_train'].shape[1:],
+            brand_input_shape=brand_input_shape,
+            model_input_shape=model_input_shape,
             output_shape=train_dict['y_' + y + '_train'].shape[1])
         # print(model.summary())
 
         train_dict['model'] = model
         train_dict['y_train'] = train_dict['y_' + y + '_train']
-        train_dict['y_val'] = train_dict['y_' + y + '_val']
+        if validate:
+            train_dict['y_val'] = train_dict['y_' + y + '_val']
         train_dict['weights_prefix'] = y
         model = train(**train_dict)
 
@@ -568,6 +670,16 @@ def main():
         test_dict['X_title_test'] = title_vec.transform(test_df['title'].values).toarray()
         test_dict['X_nouns_test'] = nouns_vec.transform(test_df['nouns'].values).toarray()
         test_dict['X_numbers_test'] = numbers_vec.transform(test_df['numbers'].values).toarray()
+        if y != 'Brand':
+            brand_mapping = dict((v, k) for k, v in mapping_dict['Brand'].items())
+            brands = test_df['Brand'].apply(lambda x: brand_mapping[int(x.split()[0])]).values
+            brands = lb_dict['Brand'].transform(brands)
+            test_dict['X_brand_test'] = brands
+            if y != 'Phone Model':
+                model_mapping = dict((v, k) for k, v in mapping_dict['Phone Model'].items())
+                models = test_df['Phone Model'].apply(lambda x: model_mapping[int(x.split()[0])]).values
+                models = lb_dict['Phone Model'].transform(models)
+                test_dict['X_model_test'] = models
 
         test_df[y] = test(**test_dict)
     #end for

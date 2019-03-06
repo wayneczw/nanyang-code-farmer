@@ -12,21 +12,16 @@ from quantulum import parser
 import multiprocessing as mp
 from multiprocessing import cpu_count
 from langdetect.detector_factory import init_factory
+from nltk.stem.snowball import SnowballStemmer
+import spacy
+
+nlp = spacy.load('en_core_web_sm')
+stemmer = SnowballStemmer("english")
 
 logger = logging.getLogger(__name__)
 
-raw_categorical_targets = [
-    'Benefits', 'Brand',
-    'Colour_group', 'Product_texture',
-    'Skin_type']
-
-categorical_targets = [
-    'Benefits', 'Brand',
-    'Colour_group', 'Product_texture',
-    'Skin_type']
-
 categorical_features = [
-    'nouns', 'numbers']
+    'lang', 'nouns', 'numbers', 'adj']
 
 ncores = cpu_count()
 
@@ -54,6 +49,14 @@ def get_continuous_chunks(text):
 #end def
 
 
+def get_adj(text):
+    doc = nlp(text)
+
+    adj = [token.tag_ for token in doc if token.tag_ == 'ADJ']
+    return ' '.join(adj) if adj else np.nan
+#end def
+
+
 def get_lang(text):
     try:
         return detect(text)
@@ -75,44 +78,79 @@ def get_num(text):
 #end def
 
 
-def read(df_path, quick=False):
+def get_stem(text):
+    tokens = text.split(' ')
+    stemmed = [stemmer.stem(token) for token in tokens]
+
+    return ' '.join(stemmed)
+#end def
+
+
+def read(df_path, lang=False, translate=False, numbers=False, nouns=False, adjs=False, ocr_result=False, stems=False, quick=False):
     logger.info("Reading in data from {}....".format(df_path))
 
     df = pd.read_csv(df_path)
-    if quick: df = df[:1024]
+    if quick:
+        df = df[:1024]
 
-    # Lang Detection
-    logger.info("Detecting language....")
-    with mp.Pool(ncores) as pool:
-        langs = pool.imap(get_lang, df['title'], chunksize=10)
-        langs = [lang for lang in langs]
-    #end with
-    df['lang'] = pd.Series(langs)
-    logger.info("Done detecting language....")
+    if ocr_result:
+        df['old_title'] = df['title']
+        df['title'] = df['title'].str.cat(df['ocr_result'], sep='. ', na_rep='')
 
-    # # Translation
-    # logger.info('Translating....')
-    # df['title'] = df.apply(lambda x: to_en(x.title) if x.lang == 'id' else x.title, axis=1)
-    # logger.info("Done translating....")
+    if lang:
+        # Lang Detection
+        logger.info("Detecting language....")
+        with mp.Pool(ncores) as pool:
+            langs = pool.imap(get_lang, df['title'], chunksize=10)
+            langs = [lang for lang in langs]
+        #end with
+        df['lang'] = pd.Series(langs)
+        logger.info("Done detecting language....")
 
-    # Get number/unit
-    logger.info("Extracting number/unit....")
-    with mp.Pool(ncores) as pool:
-        numbers = pool.imap(get_num, df['title'], chunksize=10)
-        numbers = [num for num in numbers]
-    #end with
-    df['numbers'] = pd.Series(numbers)
-    #end try
-    logger.info("Done extracting number/unit....")
+    if translate:
+        # Translation
+        logger.info('Translating....')
+        df['title'] = df.apply(lambda x: to_en(x.title) if x.lang == 'id' else x.title, axis=1)
+        logger.info("Done translating....")
 
-    # Get NP
-    logger.info("Extracting noun phrases....")
-    with mp.Pool(ncores) as pool:
-        nouns = pool.imap(get_continuous_chunks, df['title'], chunksize=10)
-        nouns = [noun for noun in nouns]
-    #end with
-    df['nouns'] = pd.Series(nouns)
-    logger.info("Done extracting noun phrases....")
+    if numbers:
+        # Get number/unit
+        logger.info("Extracting number/unit....")
+        with mp.Pool(ncores) as pool:
+            numbers = pool.imap(get_num, df['title'], chunksize=10)
+            numbers = [num for num in numbers]
+        #end with
+        df['numbers'] = pd.Series(numbers)
+        #end try
+        logger.info("Done extracting number/unit....")
+
+    if nouns:
+        # Get NP
+        logger.info("Extracting noun phrases....")
+        with mp.Pool(ncores) as pool:
+            nouns = pool.imap(get_continuous_chunks, df['title'], chunksize=10)
+            nouns = [noun for noun in nouns]
+        #end with
+        df['nouns'] = pd.Series(nouns)
+        logger.info("Done extracting noun phrases....")
+
+    if adjs:
+        logger.info("Extracting adj....")
+        with mp.Pool(ncores) as pool:
+            adjs = pool.imap(get_adj, df['title'], chunksize=10)
+            adjs = [adj for adj in adjs]
+        #end with
+        df['adj'] = pd.Series(adjs)
+        logger.info("Done extracting adj....")        
+
+    if stems:
+        logger.info("Stemming....")
+        with mp.Pool(ncores) as pool:
+            stems = pool.imap(get_stem, df['title'], chunksize=10)
+            stems = [stem for stem in stems]
+        #end with
+        df['stemmed_title'] = pd.Series(stems)
+        logger.info("Done stemming....")
 
     df[categorical_features] = df[categorical_features].fillna('unk')
 
@@ -135,7 +173,11 @@ def main():
     quick = False
 
     for f in A.files:
-        df = read(f, quick=quick)
+        df = read(f, 
+            lang=False, translate=False,
+            numbers=True, nouns=True,
+            adjs=True, ocr_result=True,
+            stems=True, quick=quick)
         df.to_csv(f.split('.csv')[0] + '_processed.csv', index=False)
 #end def
 

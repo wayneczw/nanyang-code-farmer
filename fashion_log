@@ -1,111 +1,109 @@
-2019-03-01 15:23:19,739 [__main__-16956] INFO: Reading in data from data/train_test/fashion_data_info_train_competition_processed.csv....
-2019-03-01 15:23:20,913 [__main__-16956] INFO: Done reading in 219702 data....
-2019-03-01 15:23:20,913 [__main__-16956] INFO: Reading in data from data/train_test/fashion_data_info_train_competition_processed.csv....
-2019-03-01 15:23:21,571 [__main__-16956] INFO: Done reading in 219702 data....
-2019-03-01 15:23:21,662 [__main__-16956] INFO: Encoding labels....
-2019-03-01 15:24:20,367 [__main__-16956] INFO: Done encoding labels....
+⇒  python -m fashion_text -i data/train_test/fashion_data_info_train_competition_processed.csv -t data/train_test/fashion_data_info_val_competition_processed.csv -m data/fashion_profile_train.json
+Using TensorFlow backend.
+2019-03-05 16:17:15,113 [__main__-66121] INFO: Reading in data from data/train_test/fashion_data_info_train_competition_processed.csv....
+2019-03-05 16:17:16,626 [__main__-66121] INFO: Done reading in 275142 data....
+2019-03-05 16:17:16,627 [__main__-66121] INFO: Reading in data from data/train_test/fashion_data_info_val_competition_processed.csv....
+2019-03-05 16:17:16,863 [__main__-66121] INFO: Done reading in 69498 data....
+2019-03-05 16:17:16,998 [__main__-66121] INFO: Encoding labels....
+2019-03-05 16:17:19,727 [__main__-66121] INFO: Done encoding labels....
 ==================================================
 Pattern
 ==================================================
-2019-03-01 15:24:35.663615: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+2019-03-05 16:17:37.857012: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
 Epoch 1/16
-200/200 [==============================] - 71s 353ms/step - loss: 0.7413 - acc: 0.8160 - auc: 0.9714 - val_loss: 0.2790 - val_acc: 0.9210 - val_auc: 0.9967
+577/577 [==============================] - 166s 287ms/step - loss: 0.3166 - acc: 0.9125 - val_loss: 0.2295 - val_acc: 0.9337
 
-Epoch 00001: val_loss improved from inf to 0.27904, saving model to ./weights/Pattern_0.27904_0.74231_0001.weights.h5
+Epoch 00001: val_loss improved from inf to 0.22953, saving model to ./weights/Pattern_0.22953_0.31667_0001.weights.h5
 Epoch 2/16
-200/200 [==============================] - 59s 295ms/step - loss: 0.2359 - acc: 0.9287 - auc: 0.9974 - val_loss: 0.2879 - val_acc: 0.9191 - val_auc: 0.9939
+577/577 [==============================] - 163s 283ms/step - loss: 0.1862 - acc: 0.9416 - val_loss: 0.2276 - val_acc: 0.9338
 
-Epoch 00002: val_loss did not improve from 0.27904
+Epoch 00002: val_loss improved from 0.22953 to 0.22765, saving model to ./weights/Pattern_0.22765_0.18624_0002.weights.h5
 Epoch 3/16
-200/200 [==============================] - 59s 294ms/step - loss: 0.1606 - acc: 0.9486 - auc: 0.9988 - val_loss: 0.3242 - val_acc: 0.9198 - val_auc: 0.9879
+577/577 [==============================] - 162s 281ms/step - loss: 0.1595 - acc: 0.9480 - val_loss: 0.2343 - val_acc: 0.9346
 
-Epoch 00003: val_loss did not improve from 0.27904
+Epoch 00003: val_loss did not improve from 0.22765
 Epoch 4/16
-200/200 [==============================] - 59s 293ms/step - loss: 0.1211 - acc: 0.9593 - auc: 0.9993 - val_loss: 0.3659 - val_acc: 0.9138 - val_auc: 0.9845
+577/577 [==============================] - 164s 284ms/step - loss: 0.1438 - acc: 0.9521 - val_loss: 0.2462 - val_acc: 0.9345
 
-Epoch 00004: val_loss did not improve from 0.27904
+Epoch 00004: val_loss did not improve from 0.22765
 Epoch 00004: early stopping
 ==================================================
 Collar Type
 ==================================================
 Epoch 1/16
-108/108 [==============================] - 44s 406ms/step - loss: 0.8183 - acc: 0.7971 - auc: 0.9621 - val_loss: 0.2578 - val_acc: 0.9250 - val_auc: 0.9967
+400/400 [==============================] - 114s 284ms/step - loss: 0.2567 - acc: 0.9256 - val_loss: 0.1924 - val_acc: 0.9401
 
-Epoch 00001: val_loss improved from inf to 0.25776, saving model to ./weights/Collar Type_0.25776_0.82014_0001.weights.h5
+Epoch 00001: val_loss improved from inf to 0.19239, saving model to ./weights/Collar Type_0.19239_0.25680_0001.weights.h5
 Epoch 2/16
-108/108 [==============================] - 31s 291ms/step - loss: 0.1833 - acc: 0.9446 - auc: 0.9986 - val_loss: 0.2693 - val_acc: 0.9270 - val_auc: 0.9953
+400/400 [==============================] - 113s 283ms/step - loss: 0.1363 - acc: 0.9547 - val_loss: 0.1929 - val_acc: 0.9408
 
-Epoch 00002: val_loss did not improve from 0.25776
+Epoch 00002: val_loss did not improve from 0.19239
 Epoch 3/16
-108/108 [==============================] - 31s 288ms/step - loss: 0.0958 - acc: 0.9717 - auc: 0.9996 - val_loss: 0.2930 - val_acc: 0.9264 - val_auc: 0.9927
+400/400 [==============================] - 114s 285ms/step - loss: 0.1105 - acc: 0.9611 - val_loss: 0.2043 - val_acc: 0.9404
 
-Epoch 00003: val_loss did not improve from 0.25776
-Epoch 4/16
-108/108 [==============================] - 31s 290ms/step - loss: 0.0534 - acc: 0.9842 - auc: 0.9998 - val_loss: 0.3379 - val_acc: 0.9243 - val_auc: 0.9870
-
-Epoch 00004: val_loss did not improve from 0.25776
-Epoch 00004: early stopping
+Epoch 00003: val_loss did not improve from 0.19239
+Epoch 00003: early stopping
 ==================================================
 Fashion Trend
 ==================================================
 Epoch 1/16
-210/210 [==============================] - 75s 355ms/step - loss: 0.5386 - acc: 0.8432 - auc: 0.9768 - val_loss: 0.2852 - val_acc: 0.9049 - val_auc: 0.9955
+518/518 [==============================] - 151s 291ms/step - loss: 0.3147 - acc: 0.8998 - val_loss: 0.2495 - val_acc: 0.9143
 
-Epoch 00001: val_loss improved from inf to 0.28515, saving model to ./weights/Fashion Trend_0.28515_0.53800_0001.weights.h5
+Epoch 00001: val_loss improved from inf to 0.24954, saving model to ./weights/Fashion Trend_0.24954_0.31473_0001.weights.h5
 Epoch 2/16
-210/210 [==============================] - 63s 301ms/step - loss: 0.2302 - acc: 0.9243 - auc: 0.9968 - val_loss: 0.2903 - val_acc: 0.9056 - val_auc: 0.9949
+518/518 [==============================] - 147s 284ms/step - loss: 0.2138 - acc: 0.9253 - val_loss: 0.2471 - val_acc: 0.9168
 
-Epoch 00002: val_loss did not improve from 0.28515
+Epoch 00002: val_loss improved from 0.24954 to 0.24708, saving model to ./weights/Fashion Trend_0.24708_0.21353_0002.weights.h5
 Epoch 3/16
-210/210 [==============================] - 63s 300ms/step - loss: 0.1826 - acc: 0.9376 - auc: 0.9979 - val_loss: 0.3000 - val_acc: 0.9090 - val_auc: 0.9938
+518/518 [==============================] - 144s 279ms/step - loss: 0.1927 - acc: 0.9306 - val_loss: 0.2441 - val_acc: 0.9154
 
-Epoch 00003: val_loss did not improve from 0.28515
+Epoch 00003: val_loss improved from 0.24708 to 0.24410, saving model to ./weights/Fashion Trend_0.24410_0.19275_0003.weights.h5
 Epoch 4/16
-210/210 [==============================] - 63s 301ms/step - loss: 0.1514 - acc: 0.9487 - auc: 0.9986 - val_loss: 0.3523 - val_acc: 0.8992 - val_auc: 0.9911
+518/518 [==============================] - 147s 283ms/step - loss: 0.1798 - acc: 0.9348 - val_loss: 0.2536 - val_acc: 0.9148
 
-Epoch 00004: val_loss did not improve from 0.28515
-Epoch 00004: early stopping
+Epoch 00004: val_loss did not improve from 0.24410
+Epoch 5/16
+518/518 [==============================] - 148s 285ms/step - loss: 0.1712 - acc: 0.9374 - val_loss: 0.2495 - val_acc: 0.9178
+
+Epoch 00005: val_loss did not improve from 0.24410
+Epoch 00005: early stopping
 ==================================================
 Clothing Material
 ==================================================
 Epoch 1/16
-202/202 [==============================] - 75s 371ms/step - loss: 0.8948 - acc: 0.7540 - auc: 0.9617 - val_loss: 0.5270 - val_acc: 0.8299 - val_auc: 0.9904
+618/618 [==============================] - 180s 291ms/step - loss: 0.5038 - acc: 0.8355 - val_loss: 0.4222 - val_acc: 0.8551
 
-Epoch 00001: val_loss improved from inf to 0.52700, saving model to ./weights/Clothing Material_0.52700_0.89623_0001.weights.h5
+Epoch 00001: val_loss improved from inf to 0.42218, saving model to ./weights/Clothing Material_0.42218_0.50385_0001.weights.h5
 Epoch 2/16
-202/202 [==============================] - 62s 307ms/step - loss: 0.3984 - acc: 0.8680 - auc: 0.9946 - val_loss: 0.5184 - val_acc: 0.8302 - val_auc: 0.9890
+618/618 [==============================] - 178s 289ms/step - loss: 0.3700 - acc: 0.8655 - val_loss: 0.4216 - val_acc: 0.8567
 
-Epoch 00002: val_loss improved from 0.52700 to 0.51842, saving model to ./weights/Clothing Material_0.51842_0.39783_0002.weights.h5
+Epoch 00002: val_loss improved from 0.42218 to 0.42157, saving model to ./weights/Clothing Material_0.42157_0.37002_0002.weights.h5
 Epoch 3/16
-202/202 [==============================] - 62s 306ms/step - loss: 0.3128 - acc: 0.8888 - auc: 0.9969 - val_loss: 0.5376 - val_acc: 0.8327 - val_auc: 0.9839
+618/618 [==============================] - 176s 285ms/step - loss: 0.3409 - acc: 0.8714 - val_loss: 0.4246 - val_acc: 0.8567
 
-Epoch 00003: val_loss did not improve from 0.51842
+Epoch 00003: val_loss did not improve from 0.42157
 Epoch 4/16
-202/202 [==============================] - 62s 305ms/step - loss: 0.2621 - acc: 0.9023 - auc: 0.9978 - val_loss: 0.5798 - val_acc: 0.8222 - val_auc: 0.9810
+618/618 [==============================] - 176s 285ms/step - loss: 0.3238 - acc: 0.8749 - val_loss: 0.4303 - val_acc: 0.8557
 
-Epoch 00004: val_loss did not improve from 0.51842
-Epoch 5/16
-202/202 [==============================] - 62s 306ms/step - loss: 0.2302 - acc: 0.9119 - auc: 0.9982 - val_loss: 0.6203 - val_acc: 0.8177 - val_auc: 0.9769
-
-Epoch 00005: val_loss did not improve from 0.51842
-Epoch 00005: early stopping
+Epoch 00004: val_loss did not improve from 0.42157
+Epoch 00004: early stopping
 ==================================================
 Sleeves
 ==================================================
 Epoch 1/16
-372/372 [==============================] - 126s 338ms/step - loss: 0.1059 - acc: 0.9690 - auc: 0.9939 - val_loss: 0.0548 - val_acc: 0.9818 - val_auc: 0.9991
+626/626 [==============================] - 182s 290ms/step - loss: 0.0592 - acc: 0.9816 - val_loss: 0.0454 - val_acc: 0.9863
 
-Epoch 00001: val_loss improved from inf to 0.05483, saving model to ./weights/Sleeves_0.05483_0.10609_0001.weights.h5
+Epoch 00001: val_loss improved from inf to 0.04540, saving model to ./weights/Sleeves_0.04540_0.05928_0001.weights.h5
 Epoch 2/16
-372/372 [==============================] - 112s 300ms/step - loss: 0.0334 - acc: 0.9889 - auc: 0.9996 - val_loss: 0.0547 - val_acc: 0.9834 - val_auc: 0.9987
+626/626 [==============================] - 177s 283ms/step - loss: 0.0311 - acc: 0.9893 - val_loss: 0.0426 - val_acc: 0.9856
 
-Epoch 00002: val_loss improved from 0.05483 to 0.05473, saving model to ./weights/Sleeves_0.05473_0.03347_0002.weights.h5
+Epoch 00002: val_loss improved from 0.04540 to 0.04264, saving model to ./weights/Sleeves_0.04264_0.03107_0002.weights.h5
 Epoch 3/16
-372/372 [==============================] - 111s 299ms/step - loss: 0.0230 - acc: 0.9920 - auc: 0.9998 - val_loss: 0.0654 - val_acc: 0.9830 - val_auc: 0.9974
+626/626 [==============================] - 179s 286ms/step - loss: 0.0242 - acc: 0.9916 - val_loss: 0.0452 - val_acc: 0.9859
 
-Epoch 00003: val_loss did not improve from 0.05473
+Epoch 00003: val_loss did not improve from 0.04264
 Epoch 4/16
-372/372 [==============================] - 111s 299ms/step - loss: 0.0172 - acc: 0.9940 - auc: 0.9999 - val_loss: 0.0788 - val_acc: 0.9824 - val_auc: 0.9963
+626/626 [==============================] - 180s 288ms/step - loss: 0.0211 - acc: 0.9923 - val_loss: 0.0495 - val_acc: 0.9857
 
-Epoch 00004: val_loss did not improve from 0.05473
+Epoch 00004: val_loss did not improve from 0.04264
 Epoch 00004: early stopping

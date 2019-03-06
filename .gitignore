@@ -1,6 +1,7 @@
 img/
 weights/
 data/
+*.joblib
 
 # Mac
 *.DS_Store
