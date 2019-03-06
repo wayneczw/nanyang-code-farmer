@@ -1,25 +1,20 @@
-import joblib
 import gc
-import json
 import logging
 import matplotlib.pyplot as plt
-import multiprocessing as mp
 import numpy as np
 import pandas as pd
 import random
 import regex as re
 import tensorflow as tf
 import tensorflow_hub as hub
+import json
+import joblib
 
 from argparse import ArgumentParser
-from multiprocessing import cpu_count
 
 from keras import backend as K
 from keras import optimizers
 from keras import regularizers
-from keras.applications import ResNet50
-from keras.applications import Xception
-from keras.applications.inception_v3 import preprocess_input
 from keras.callbacks import EarlyStopping
 from keras.callbacks import ModelCheckpoint
 from keras.engine import Layer
@@ -31,7 +26,6 @@ from keras.layers import Embedding
 from keras.layers import Flatten
 from keras.layers import GRU
 from keras.layers import GlobalMaxPool1D
-from keras.layers import GlobalAveragePooling2D
 from keras.layers import Input
 from keras.layers import Lambda
 from keras.layers import Reshape
@@ -43,29 +37,27 @@ from keras.preprocessing import text
 
 # from sklearn.base import BaseEstimator
 # from sklearn.base import ClassifierMixin
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelBinarizer
 
 
 logger = logging.getLogger(__name__)
-ncores = cpu_count()
 
 
 raw_categorical_targets = [
-    'Operating System', 'Features',
+    'Brand', 'Phone Model', 'Operating System', 'Features',
     'Network Connections', 'Memory RAM',
-    'Brand', 'Warranty Period',
+    'Warranty Period',
     'Storage Capacity', 'Color Family',
-    'Phone Model', 'Camera', 'Phone Screen Size']
+    'Camera', 'Phone Screen Size']
 
 categorical_targets = [
-    'Operating System', 'Features',
+    'Brand', 'Phone Model', 'Operating System', 'Features',
     'Network Connections', 'Memory RAM',
-    'Brand', 'Warranty Period',
+    'Warranty Period',
     'Storage Capacity', 'Color Family',
-    'Phone Model', 'Camera', 'Phone Screen Size']
+    'Camera', 'Phone Screen Size']
 
 categorical_features = [
     'nouns', 'numbers']
@@ -236,8 +228,10 @@ def build_model(
     title_input_shape,
     nouns_input_shape,
     numbers_input_shape,
-    resnet_input_shape,
+    img_input_shape,
     output_shape,
+    brand_input_shape=None,
+    model_input_shape=None,
     dropout_rate=0, kernel_regularizer=0,
     activity_regularizer=0, bias_regularizer=0):
     
@@ -255,15 +249,39 @@ def build_model(
     numbers = Dense(256)(numbers_input)
     numbers = Dropout(dropout_rate)(numbers)
 
-    resnet_input = Input(resnet_input_shape, name='resnet_input')
-    resnet = Dense(512)(resnet_input)
-    resnet = Dropout(dropout_rate)(resnet)
+    img_input = Input(img_input_shape, name='img_input')
+    img = Dense(512)(img_input)
+    img = Dropout(dropout_rate)(img)
 
-    x = concatenate([title, nouns, numbers, resnet])
+    inputs = [title_input, nouns_input, numbers_input, img_input]
+
+    if brand_input_shape is not None:
+        brand_input = Input(brand_input_shape, name='brand_input')
+        brand = Dense(128)(brand_input)
+        brand = Dropout(dropout_rate)(brand)
+        inputs.append(brand_input)
+
+    if model_input_shape is not None:
+        model_input = Input(model_input_shape, name='model_input')
+        model = Dense(128)(model_input)
+        model = Dropout(dropout_rate)(model)
+        inputs.append(model_input)
+
+    if brand_input_shape is not None and model_input_shape is not None:
+        x = concatenate([title, nouns, numbers, img, brand, model])
+    elif brand_input_shape is not None:
+        x = concatenate([title, nouns, numbers, img, brand])
+    else:
+        x = concatenate([title, nouns, numbers, img])
+
+    x = Dense(1024)(x)
+    x = Dropout(dropout_rate)(x)
+    x = Dense(512)(x)
+    x = Dropout(dropout_rate)(x) 
 
     output = Dense(output_shape, activation='softmax', name='output')(x)
 
-    model = Model(inputs=[title_input, nouns_input, numbers_input, resnet_input], outputs=[output])
+    model = Model(inputs=inputs, outputs=[output])
 
     model.compile(optimizer=optimizers.Adam(0.0005, decay=1e-6),
                   loss='categorical_crossentropy',
@@ -274,8 +292,9 @@ def build_model(
 
 
 def batch_iter(
-    X_title, X_nouns, X_numbers, X_resnet,
+    X_title, X_nouns, X_numbers, X_img,
     y,
+    X_brand=None, X_model=None,
     batch_size=128, **kwargs):
 
     data_size = y.shape[0]
@@ -293,15 +312,39 @@ def batch_iter(
                 X_title_batch = [X_title[i] for i in shuffled_indices[start_index:end_index]]
                 X_nouns_batch = [x for x in X_nouns[start_index:end_index]]
                 X_numbers_batch = [x for x in X_numbers[start_index:end_index]]
-                X_resnet_batch = [x for x in X_resnet[start_index:end_index]]
+                X_img_batch = [x for x in X_img[start_index:end_index]]
                 y_batch = [y[i] for i in shuffled_indices[start_index:end_index]]
 
-                yield ({'title_input': np.asarray(X_title_batch),
-                        'nouns_input': np.asarray(X_nouns_batch),
-                        'numbers_input': np.asarray(X_numbers_batch),
-                        'resnet_input': np.asarray(X_resnet_batch)
-                        },
-                        {'output': np.asarray(y_batch)})
+                if X_brand is not None:
+                    X_brand_batch = [x for x in X_brand[start_index:end_index]]
+                if X_model is not None:
+                    X_model_batch = [x for x in X_model[start_index:end_index]]
+                
+                if X_model is not None:
+                    yield ({'title_input': np.asarray(X_title_batch),
+                            'nouns_input': np.asarray(X_nouns_batch),
+                            'numbers_input': np.asarray(X_numbers_batch),
+                            'img_input': np.asarray(X_img_batch),
+                            'brand_input': np.asarray(X_brand_batch),
+                            'model_input': np.asarray(X_model_batch),
+                            },
+                            {'output': np.asarray(y_batch)})
+                elif X_brand is not None:
+                    yield ({'title_input': np.asarray(X_title_batch),
+                            'nouns_input': np.asarray(X_nouns_batch),
+                            'numbers_input': np.asarray(X_numbers_batch),
+                            'img_input': np.asarray(X_img_batch),
+                            'brand_input': np.asarray(X_brand_batch),
+                            },
+                            {'output': np.asarray(y_batch)})
+                else:
+                    yield ({'title_input': np.asarray(X_title_batch),
+                            'nouns_input': np.asarray(X_nouns_batch),
+                            'numbers_input': np.asarray(X_numbers_batch),
+                            'img_input': np.asarray(X_img_batch),
+                            },
+                            {'output': np.asarray(y_batch)})
+                #end if
             #end for
         #end while
     #end def
@@ -312,9 +355,12 @@ def batch_iter(
 
 def train(
     model,
-    X_title_train, X_nouns_train, X_numbers_train, X_resnet_train,
+    X_title_train, X_nouns_train, X_numbers_train, X_img_train,
     y_train,
-    X_title_val=None, X_nouns_val=None, X_numbers_val=None, X_resnet_val=None, y_val=None,
+    X_brand_train=None, X_model_train=None,
+    X_title_val=None, X_nouns_val=None, X_numbers_val=None, X_img_val=None,
+    y_val=None,
+    X_brand_val=None, X_model_val=None,
     weights_path='./weights/', weights_prefix='',
     class_weight=None, batch_size=128, epochs=32, **kwargs):
 
@@ -326,18 +372,20 @@ def train(
     tf_session.run(init_op)
 
     train_steps, train_batches = batch_iter(
-        X_title_train, X_nouns_train, X_numbers_train, X_resnet_train, y_train,
+        X_title_train, X_nouns_train, X_numbers_train, X_img_train, y_train,
+        X_brand_train, X_model_train,
         batch_size=batch_size)
 
     if y_val is not None:
         val_steps, val_batches = batch_iter(
-            X_title_val, X_nouns_val, X_numbers_val, X_resnet_val, y_val,
+            X_title_val, X_nouns_val, X_numbers_val, X_img_val, y_val,
+            X_brand_val, X_model_val,
             batch_size=batch_size)
 
     # define early stopping callback
     callbacks_list = []
     if y_val is not None:
-        early_stopping = dict(monitor='val_loss', patience=2, min_delta=0.0001, verbose=1)
+        early_stopping = dict(monitor='val_loss', patience=1, min_delta=0.0001, verbose=1)
         model_checkpoint = dict(filepath=weights_path + weights_prefix + '_{val_loss:.5f}_{loss:.5f}_{epoch:04d}.weights.h5',
                                 save_best_only=True,
                                 save_weights_only=True,
@@ -381,7 +429,8 @@ def train(
 
 
 def predict_iter(
-    X_title, X_nouns, X_numbers, X_resnet,
+    X_title, X_nouns, X_numbers, X_img,
+    X_brand=None, X_model=None,
     batch_size=128, **kwargs):
 
     data_size = X_title.shape[0]
@@ -395,12 +444,34 @@ def predict_iter(
             X_title_batch = [x for x in X_title[start_index:end_index]]
             X_nouns_batch = [x for x in X_nouns[start_index:end_index]]
             X_numbers_batch = [x for x in X_numbers[start_index:end_index]]
-            X_resnet_batch = [x for x in X_resnet[start_index:end_index]]
-            yield ({'title_input': np.asarray(X_title_batch),
-                    'nouns_input': np.asarray(X_nouns_batch),
-                    'numbers_input': np.asarray(X_numbers_batch),
-                    'resnet_input': np.asarray(X_resnet_batch),
-                    })
+            X_img_batch = [x for x in X_img[start_index:end_index]]
+            if X_brand is not None:
+                X_brand_batch = [x for x in X_brand[start_index:end_index]]
+            if X_model is not None:
+                X_model_batch = [x for x in X_model[start_index:end_index]]
+            
+            if X_model is not None:
+                yield ({'title_input': np.asarray(X_title_batch),
+                        'nouns_input': np.asarray(X_nouns_batch),
+                        'numbers_input': np.asarray(X_numbers_batch),
+                        'img_input': np.asarray(X_img_batch),
+                        'brand_input': np.asarray(X_brand_batch),
+                        'model_input': np.asarray(X_model_batch),
+                        })
+            elif X_brand is not None:
+                yield ({'title_input': np.asarray(X_title_batch),
+                        'nouns_input': np.asarray(X_nouns_batch),
+                        'numbers_input': np.asarray(X_numbers_batch),
+                        'img_input': np.asarray(X_img_batch),
+                        'brand_input': np.asarray(X_brand_batch),
+                        })
+            else:
+                yield ({'title_input': np.asarray(X_title_batch),
+                        'nouns_input': np.asarray(X_nouns_batch),
+                        'numbers_input': np.asarray(X_numbers_batch),
+                        'img_input': np.asarray(X_img_batch),
+                        })
+            #end if
         #end for
     #end def
 
@@ -410,8 +481,9 @@ def predict_iter(
 
 def test(
     model,
-    X_title_test, X_nouns_test, X_numbers_test, X_resnet_test,
+    X_title_test, X_nouns_test, X_numbers_test, X_img_test,
     lb, mapping,
+    X_brand_test=None, X_model_test=None,
     batch_size=128, **kwargs):
 
     def _second_largest(numbers):
@@ -432,7 +504,8 @@ def test(
     #end def
 
     test_steps, test_batches = predict_iter(
-        X_title_test, X_nouns_test, X_numbers_test, X_resnet_test,
+        X_title_test, X_nouns_test, X_numbers_test, X_img_test,
+        X_brand_test, X_model_test,
         batch_size=batch_size, **kwargs)
 
     proba = model.predict_generator(generator=test_batches, steps=test_steps)
@@ -492,17 +565,17 @@ def main():
 
     # read in data
     train_df, mapping_dict = read(A.train, A.mapping, quick=quick)
-    train_resnet = joblib.load(A.train_img_features)
     train_dict = dict(batch_size=batch_size, epochs=epochs)
+    train_img = joblib.load(A.train_img_features)
     test_df = read(A.test)
-    test_resnet = joblib.load(A.test_img_features)
     test_dict = dict(batch_size=batch_size, epochs=epochs)
+    test_img = joblib.load(A.test_img_features)
     # analyse(train_df, categorical_targets)
     # input()
 
     if validate:
         train_df, val_df = train_test_split(train_df, test_size=0.1, random_state=A.seed)
-        train_resnet, val_resnet = train_test_split(train_resnet, test_size=0.1, random_state=A.seed)
+        train_img, val_img = train_test_split(train_img, test_size=0.1, random_state=A.seed)
         train_df = train_df.reset_index(drop=True)
         val_df = val_df.reset_index(drop=True)
 
@@ -512,8 +585,8 @@ def main():
         lb_dict[y] = LabelBinarizer()
         proportion = max(1 / len(mapping_dict[y]), 0.03)
         to_be_trained_df = train_df.loc[train_df[y] != 'unk']
-        to_be_trained_df = undersampling(
-            to_be_trained_df, y, proportion)
+        # to_be_trained_df = undersampling(
+        #     to_be_trained_df, y, proportion)
 
         train_dict['X_' + y + '_train_index'] = list(to_be_trained_df.index.values)
         train_dict['y_' + y + '_train'] = lb_dict[y].fit_transform(to_be_trained_df[y][train_dict['X_' + y + '_train_index']])
@@ -530,26 +603,37 @@ def main():
         print('='*50)
         print(y)
         print('='*50)
-        title_vec = TfidfVectorizer(
+        # title_vec = TfidfVectorizer(
+        #     max_features=8192,
+        #     sublinear_tf=True,
+        #     strip_accents='unicode',
+        #     stop_words='english',
+        #     analyzer='word',
+        #     token_pattern=r'\w{1,}',
+        #     ngram_range=(1, 4),
+        #     dtype=np.float32,
+        #     norm='l2',
+        #     min_df=5,
+        #     max_df=.9)
+
+        title_vec = CountVectorizer(
             max_features=8192,
-            sublinear_tf=True,
             strip_accents='unicode',
             stop_words='english',
             analyzer='word',
             token_pattern=r'\w{1,}',
             ngram_range=(1, 4),
             dtype=np.float32,
-            norm='l2',
             min_df=5,
             max_df=.9)
 
         nouns_vec = CountVectorizer(
-            max_features=1024,
+            max_features=2056,
             strip_accents='unicode',
             stop_words='english',
             analyzer='word',
             token_pattern=r'\w{1,}',
-            ngram_range=(1, 2),
+            ngram_range=(1, 3),
             dtype=np.float32,
             min_df=5,
             max_df=.9)
@@ -568,27 +652,42 @@ def main():
         train_dict['X_title_train'] = title_vec.fit_transform(train_df['title'][train_dict['X_' + y + '_train_index']]).toarray()
         train_dict['X_nouns_train'] = nouns_vec.fit_transform(train_df['nouns'][train_dict['X_' + y + '_train_index']]).toarray()
         train_dict['X_numbers_train'] = numbers_vec.fit_transform(train_df['numbers'][train_dict['X_' + y + '_train_index']]).toarray()
-        train_dict['X_resnet_train'] = train_resnet[train_dict['X_' + y + '_train_index']]
-        # train_dict['X_Xception_train'] = get_img_features(Xception, read_img(train_df.loc[train_dict['X_' + y + '_train_index']], A.image_folder, width=299), width=299) 
+        train_dict['X_img_train'] = train_img[train_dict['X_' + y + '_train_index']]
+
+        brand_input_shape = None
+        model_input_shape = None
+
+        if y != 'Brand':
+            train_dict['X_brand_train'] = lb_dict['Brand'].transform(train_df['Brand'][train_dict['X_' + y + '_train_index']])
+            brand_input_shape = train_dict['X_brand_train'].shape[1:]
+            if y != 'Phone Model':
+                train_dict['X_model_train'] = lb_dict['Phone Model'].transform(train_df['Phone Model'][train_dict['X_' + y + '_train_index']])
+                model_input_shape = train_dict['X_model_train'].shape[1:]
 
         if validate:
             train_dict['X_title_val'] = title_vec.transform(val_df['title'][train_dict['X_' + y + '_val_index']]).toarray()
             train_dict['X_nouns_val'] = nouns_vec.transform(val_df['nouns'][train_dict['X_' + y + '_val_index']]).toarray()
             train_dict['X_numbers_val'] = numbers_vec.transform(val_df['numbers'][train_dict['X_' + y + '_val_index']]).toarray()
-            train_dict['X_resnet_val'] = train_resnet[train_dict['X_' + y + '_val_index']]
-            # train_dict['X_Xception_val'] = get_img_features(Xception, read_img(val_df.loc[train_dict['X_' + y + '_val_index']], A.image_folder, width=299), width=299) 
+            train_dict['X_img_val'] = train_img[train_dict['X_' + y + '_val_index']]
+            if y != 'Brand':
+                train_dict['X_brand_val'] = lb_dict['Brand'].transform(train_df['Brand'][train_dict['X_' + y + '_val_index']])
+                if y != 'Phone Model':
+                    train_dict['X_model_val'] = lb_dict['Phone Model'].transform(train_df['Phone Model'][train_dict['X_' + y + '_val_index']])
 
         model = build_model(
             title_input_shape=train_dict['X_title_train'].shape[1:],
             nouns_input_shape=train_dict['X_nouns_train'].shape[1:],
             numbers_input_shape=train_dict['X_numbers_train'].shape[1:],
-            resnet_input_shape=train_dict['X_resnet_train'].shape[1:],
+            img_input_shape=train_dict['X_img_train'].shape[1:],
+            brand_input_shape=brand_input_shape,
+            model_input_shape=model_input_shape,
             output_shape=train_dict['y_' + y + '_train'].shape[1])
         # print(model.summary())
 
         train_dict['model'] = model
         train_dict['y_train'] = train_dict['y_' + y + '_train']
-        train_dict['y_val'] = train_dict['y_' + y + '_val']
+        if validate:
+            train_dict['y_val'] = train_dict['y_' + y + '_val']
         train_dict['weights_prefix'] = y
         model = train(**train_dict)
 
@@ -598,8 +697,17 @@ def main():
         test_dict['X_title_test'] = title_vec.transform(test_df['title'].values).toarray()
         test_dict['X_nouns_test'] = nouns_vec.transform(test_df['nouns'].values).toarray()
         test_dict['X_numbers_test'] = numbers_vec.transform(test_df['numbers'].values).toarray()
-        test_dict['X_resnet_test'] = test_resnet
-        # test_dict['X_Xception_test'] = get_img_features(Xception, read_img(test_df, A.image_folder, width=299), width=299) 
+        test_dict['X_img_test'] = test_img
+        if y != 'Brand':
+            brand_mapping = dict((v, k) for k, v in mapping_dict['Brand'].items())
+            brands = test_df['Brand'].apply(lambda x: brand_mapping[int(x.split()[0])]).values
+            brands = lb_dict['Brand'].transform(brands)
+            test_dict['X_brand_test'] = brands
+            if y != 'Phone Model':
+                model_mapping = dict((v, k) for k, v in mapping_dict['Phone Model'].items())
+                models = test_df['Phone Model'].apply(lambda x: model_mapping[int(x.split()[0])]).values
+                models = lb_dict['Phone Model'].transform(models)
+                test_dict['X_model_test'] = models
 
         test_df[y] = test(**test_dict)
     #end for

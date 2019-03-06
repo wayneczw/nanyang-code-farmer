@@ -1,6 +1,9 @@
 img/
 weights/
 data/
+beauty_image/
+mobile_image/
+fashion_image/
 *.joblib
 
 # Mac

@@ -175,8 +175,8 @@ def main():
     for f in A.files:
         df = read(f, 
             lang=False, translate=False,
-            numbers=True, nouns=True,
-            adjs=True, ocr_result=True,
+            numbers=False, nouns=False,
+            adjs=True, ocr_result=False,
             stems=True, quick=quick)
         df.to_csv(f.split('.csv')[0] + '_processed.csv', index=False)
 #end def
