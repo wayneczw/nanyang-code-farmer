@@ -483,7 +483,7 @@ def main():
     lb_dict = dict()
     for y in categorical_targets:
         lb_dict[y] = LabelBinarizer()
-        proportion = max(1 / len(mapping_dict[y]), 0.03)
+        # proportion = max(1 / len(mapping_dict[y]), 0.03)
         to_be_trained_df = train_df.loc[train_df[y] != 'unk']
         # to_be_trained_df = undersampling(
         #     to_be_trained_df, y, proportion)
@@ -525,7 +525,7 @@ def main():
             ngram_range=(1, 4),
             dtype=np.float32,
             min_df=5,
-            max_df=.9)
+            max_df=.9).fit(train_df['title'][train_dict['X_' + y + '_train_index']].append(val_df['title'][train_dict['X_' + y + '_val_index']]).append(test_df['title']))
 
         nouns_vec = CountVectorizer(
             max_features=2048,
@@ -536,7 +536,7 @@ def main():
             ngram_range=(1, 3),
             dtype=np.float32,
             min_df=5,
-            max_df=.9)
+            max_df=.9).fit(train_df['nouns'][train_dict['X_' + y + '_train_index']].append(val_df['nouns'][train_dict['X_' + y + '_val_index']]).append(test_df['nouns']))
 
         numbers_vec = CountVectorizer(
             max_features=256,
@@ -547,11 +547,11 @@ def main():
             ngram_range=(1, 2),
             dtype=np.float32,
             min_df=5,
-            max_df=.9)
+            max_df=.9).fit(train_df['numbers'][train_dict['X_' + y + '_train_index']].append(val_df['numbers'][train_dict['X_' + y + '_val_index']]).append(test_df['numbers']))
 
-        train_dict['X_title_train'] = title_vec.fit_transform(train_df['title'][train_dict['X_' + y + '_train_index']]).toarray()
-        train_dict['X_nouns_train'] = nouns_vec.fit_transform(train_df['nouns'][train_dict['X_' + y + '_train_index']]).toarray()
-        train_dict['X_numbers_train'] = numbers_vec.fit_transform(train_df['numbers'][train_dict['X_' + y + '_train_index']]).toarray()
+        train_dict['X_title_train'] = title_vec.transform(train_df['title'][train_dict['X_' + y + '_train_index']]).toarray()
+        train_dict['X_nouns_train'] = nouns_vec.transform(train_df['nouns'][train_dict['X_' + y + '_train_index']]).toarray()
+        train_dict['X_numbers_train'] = numbers_vec.transform(train_df['numbers'][train_dict['X_' + y + '_train_index']]).toarray()
 
         if validate:
             train_dict['X_title_val'] = title_vec.transform(val_df['title'][train_dict['X_' + y + '_val_index']]).toarray()
