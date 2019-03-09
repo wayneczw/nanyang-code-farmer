@@ -1,21 +1,23 @@
 import pandas as pd
 from argparse import ArgumentParser
 from tqdm import tqdm
+import os
 
 
 def argParse():
     argparser = ArgumentParser(description='Run ocr on images in csv file')
     argparser.add_argument('-f', '--file', type=str, required=True, help='Path to csv file.')
     argparser.add_argument('-t', '--text', type=str, required=True, help='Path to text file.')
-    argparser.add_argument('-a', '--additional_found', type=str, required=True, help='Path to manually translate text file.')
+    argparser.add_argument('-a', '--additional_found', type=str, help='Path to manually translate text file.')
 
     A = argparser.parse_args()
     return A
 
 
-def find_again(index_lst, titles):
+def find_again(index_lst, titles, A):
     """ creates the text files for rows to be done by manual translation """
-    with open('to_find.txt', 'w+') as f:
+    filename = A.text.rsplit('.', 1)[0] + '_to_find.txt'
+    with open(filename, 'w+') as f:
         for item in index_lst:
             f.write('[{}] {}\r'.format(item, titles[item]))
 
@@ -30,11 +32,11 @@ def preprocess(id_lst, titles, text):
         i[0] = i[0].strip().replace(' ', '').replace(',', '')
 
     # examine any unclean translated title
-    print("unclean: title (if any)")
+    print("unclean number (if any):")
     for w in new_lst:
         if not w[0].isdigit():
             print(w)
-    print("[end of unclean title]")
+    print("[end of unclean number]")
 
     clean_dict = dict()
     for item in new_lst:
@@ -76,6 +78,7 @@ def main():
         text = text_file.read()
 
     diff, clean_dict = preprocess(id_lst, titles, text)
+    print("row to find again:", diff)
 
     # find_again(diff, titles)
 
@@ -89,9 +92,10 @@ def main():
             else:
                 translated.append(None)
             pbar.update(1)
+
     df['translated'] = pd.Series(translated)
     print(df)
-    
+
     new_file = A.file.rsplit('.', 1)[0] + '_translated.csv'
     df.to_csv(new_file, index=False)
     print('translated csv: ' + new_file)
