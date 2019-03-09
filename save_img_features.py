@@ -59,6 +59,8 @@ def resize299(img_path):
 
 
 def resize224(img_path):
+    if not img_path.endswith('.jpg'):
+        img_path += '.jpg'
     img = cv2.imread(img_path)
     return cv2.resize(img, (224, 224))
 #end def
@@ -96,8 +98,8 @@ def main():
     cnn_model = NASNetMobile(include_top=False, input_shape=(width, width, 3), weights='imagenet')
     x_input = Input((width, width, 3), name='input')
     x = Lambda(preprocess_input, name='preprocessing')(x_input)
-    x = cnn_model(x)  # Transfer Learning
-    output = GlobalAveragePooling2D(name='output')(x)  # GAP Technique
+    output = cnn_model(x)  # Transfer Learning
+    # output = GlobalAveragePooling2D(name='output')(x)
     model = Model(inputs=[x_input], outputs=[output])
 
     # load data
@@ -115,7 +117,7 @@ def main():
         end_index = min((i + 1) * batch_size, data_size)
         _df = train_df[start_index:end_index]
         _train = get_img_features(model, read_img(_df, width=width))
-        
+
         if train is None:
             train = _train
         else:
@@ -123,7 +125,7 @@ def main():
         #end if
         logger.info('Done with {}/{} batches....'.format(i+1, num_batches))
     #end for
-    joblib.dump(train, A.train.split('.')[0] + '_img_features.joblib', compress=True)
+    joblib.dump(train, A.train.split('.')[0] + '_img_features_test.joblib', compress=True)
     del train_df, train
     gc.collect()
 
@@ -149,7 +151,7 @@ def main():
         logger.info('Done with {}/{} batches....'.format(i+1, num_batches))
     #end for
 
-    joblib.dump(test, A.test.split('.')[0] + '_img_features.joblib', compress=True)
+    joblib.dump(test, A.test.split('.')[0] + '_img_features_test.joblib', compress=True)
 #end def
 
 

@@ -45,14 +45,14 @@ def main():
 
     count = 0
     with tqdm(total=len(msg)) as pbar:
-        with open('translated.txt', 'a') as text_file:
+        with open('translated.txt', 'ab') as text_file:
             while count < len(msg):
                 translated = translator.translate(msg[count:count + 5000], src="id", dest='en')
-                text_file.write(translated.text)
+                text_file.write(translated.text.encode('utf-8'))
                 pbar.update(5000)
                 count += 5000
             translated = translator.translate(msg[count:], src="id", dest='en')
-            text_file.write(translated.text)
+            text_file.write(translated.text.encode('utf-8'))
             pbar.update(len(msg[count:]))
 
 
