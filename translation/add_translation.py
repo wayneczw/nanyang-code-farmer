@@ -41,7 +41,7 @@ def preprocess(id_lst, titles, text):
     clean_dict = dict()
     for item in new_lst:
         if item[0].isdigit():
-            clean_dict[int(item[0])] = item[1].lower()
+            clean_dict[int(item[0])] = item[1].strip().lower()
     diff = set(id_lst) - (clean_dict.keys())
 
     # make sure the number of rows tally
@@ -80,7 +80,7 @@ def main():
     diff, clean_dict = preprocess(id_lst, titles, text)
     print("row to find again:", diff)
 
-    # find_again(diff, titles)
+    # find_again(diff, titles, A)
 
     clean_dict = add_manually_found(A.additional_found, clean_dict)
     translated = []
