@@ -11,6 +11,7 @@ def argParse():
     # argparser.add_argument('-i', '--image_folder', type=str, default="", help='Path to folder which contains the x_image folder')
     argparser.add_argument('-s', '--start_row', type=int, default=0, help='Starting row allocated')
     argparser.add_argument('-e', '--end_row', type=int, help='Ending row allocated (inclusive)')
+    argparser.add_argument('-i', '--increment', type=int, default=4950, help='increment when sending to translate')
     A = argparser.parse_args()
     return A
 
@@ -49,17 +50,17 @@ def main():
 
     translator = Translator()
 
-    send_translation(msg, text_file_name)
+    send_translation(msg, text_file_name, A.increment)
 
 
-def send_translation(msg, filename):
+def send_translation(msg, filename, inc=4950):
     translator = Translator()
     count = 0
 
     with tqdm(total=len(msg)) as pbar:
         with open(filename, 'wb+') as text_file:
             while count < len(msg):
-                end_count = count + 4950
+                end_count = count + inc
                 if end_count > len(msg):
                     end_count = len(msg)
                 else:
