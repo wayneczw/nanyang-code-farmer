@@ -86,16 +86,18 @@ def get_stem(text):
 #end def
 
 
-def read(df_path, lang=False, translate=False, numbers=False, nouns=False, adjs=False, ocr_result=False, stems=False, quick=False):
+def read(df_path, lang=False, translated=False, numbers=False, nouns=False, adjs=False, ocr_result=False, stems=False, quick=False):
     logger.info("Reading in data from {}....".format(df_path))
 
     df = pd.read_csv(df_path)
     if quick:
         df = df[:1024]
 
+    if translated:
+        df['title'] = df.apply(lambda x: x['translated'] if x['translated'] is not np.nan else x['title'], axis=1)
+
     if ocr_result:
-        df['old_title'] = df['title']
-        df['title'] = df['title'].str.cat(df['ocr_result'], sep='. ', na_rep='')
+        df['new_title'] = df['title'].str.cat(df['ocr_result'], sep='. ', na_rep='')
 
     if lang:
         # Lang Detection
@@ -106,12 +108,6 @@ def read(df_path, lang=False, translate=False, numbers=False, nouns=False, adjs=
         #end with
         df['lang'] = pd.Series(langs)
         logger.info("Done detecting language....")
-
-    if translate:
-        # Translation
-        logger.info('Translating....')
-        df['title'] = df.apply(lambda x: to_en(x.title) if x.lang == 'id' else x.title, axis=1)
-        logger.info("Done translating....")
 
     if numbers:
         # Get number/unit
@@ -174,10 +170,10 @@ def main():
 
     for f in A.files:
         df = read(f, 
-            lang=False, translate=False,
-            numbers=False, nouns=False,
-            adjs=True, ocr_result=False,
-            stems=True, quick=quick)
+            lang=False, translated=True,
+            numbers=True, nouns=True,
+            adjs=False, ocr_result=False,
+            stems=False, quick=quick)
         df.to_csv(f.split('.csv')[0] + '_processed.csv', index=False)
 #end def
 
