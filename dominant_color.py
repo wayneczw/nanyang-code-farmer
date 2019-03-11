@@ -113,7 +113,7 @@ def main():
             for res in color_gen:
                 color_res.append(res)
                 pbar.update(1)
-    
+
     print("Loading to data frame...")
     df['dominant_colors'] = color_res
 
