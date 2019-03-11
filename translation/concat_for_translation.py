@@ -48,8 +48,6 @@ def main():
     text_file_name = os.path.join('textfiles', text_file_name)
     print('Writing translated text to: ' + text_file_name)
 
-    translator = Translator()
-
     send_translation(msg, text_file_name, A.increment)
 
 
