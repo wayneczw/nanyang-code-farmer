@@ -94,8 +94,8 @@ def read_img(df, width=299):
 def main():
     argparser = ArgumentParser(description='Run machine learning experiment.')
     argparser.add_argument('-i', '--train', type=str, metavar='<train_set>', required=True, help='Training data set.')
-    # argparser.add_argument('-t', '--test', type=str, metavar='<test_set>', required=True, help='Test data set.')
-    # argparser.add_argument('--image_folder', type=str, default="", required=True, help='Path to folder which contains the x_image folder')
+    argparser.add_argument('-t', '--test', type=str, metavar='<test_set>', required=True, help='Test data set.')
+    argparser.add_argument('--image_folder', type=str, default="", required=True, help='Path to folder which contains the x_image folder')
     A = argparser.parse_args()
 
     log_level = 'INFO'
@@ -139,29 +139,29 @@ def main():
     del train_df, train
     gc.collect()
 
-    # logger.info('Featurizing test....')
-    # test_df = pd.read_csv(A.test)
-    # # test_df = test_df[:128]
+    logger.info('Featurizing test....')
+    test_df = pd.read_csv(A.test)
+    # test_df = test_df[:128]
 
-    # batch_size = 4096
-    # data_size = test_df.shape[0]
-    # num_batches = int((data_size - 1) / batch_size) + 1
-    # test = None
-    # for i in range(num_batches):
-    #     start_index = i * batch_size
-    #     end_index = min((i + 1) * batch_size, data_size)
-    #     _df = test_df[start_index:end_index]
-    #     _test = get_img_features(model, read_img(_df, width=width))
+    batch_size = 4096
+    data_size = test_df.shape[0]
+    num_batches = int((data_size - 1) / batch_size) + 1
+    test = None
+    for i in range(num_batches):
+        start_index = i * batch_size
+        end_index = min((i + 1) * batch_size, data_size)
+        _df = test_df[start_index:end_index]
+        _test = get_img_features(model, read_img(_df, width=width))
         
-    #     if test is None:
-    #         test = _test
-    #     else:
-    #         test = np.concatenate((test, _test))
-    #     #end if
-    #     logger.info('Done with {}/{} batches....'.format(i+1, num_batches))
-    # #end for
+        if test is None:
+            test = _test
+        else:
+            test = np.concatenate((test, _test))
+        #end if
+        logger.info('Done with {}/{} batches....'.format(i+1, num_batches))
+    #end for
 
-    # joblib.dump(test, A.test.split('.')[0] + '_img_features_test.joblib', compress=True)
+    joblib.dump(test, A.test.split('.')[0] + '_img_features_test.joblib', compress=True)
 #end def
 
 
