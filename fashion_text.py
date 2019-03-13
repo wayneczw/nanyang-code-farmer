@@ -1,50 +1,27 @@
-import gc
+import json
 import logging
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import random
-import regex as re
 import tensorflow as tf
-import tensorflow_hub as hub
-import json
 
 from argparse import ArgumentParser
 
-from category_encoders.target_encoder import TargetEncoder
-
 from keras import backend as K
 from keras import optimizers
-from keras import regularizers
 from keras.callbacks import EarlyStopping
 from keras.callbacks import ModelCheckpoint
-from keras.engine import Layer
-from keras.layers import Bidirectional
-from keras.layers import Convolution1D
 from keras.layers import Dense
 from keras.layers import Dropout
-from keras.layers import Embedding
-from keras.layers import Flatten
-from keras.layers import GRU
-from keras.layers import GlobalMaxPool1D
 from keras.layers import Input
-from keras.layers import Lambda
-from keras.layers import Reshape
-from keras.layers import SpatialDropout1D
 from keras.layers import concatenate
 from keras.models import Model
-from keras.preprocessing import sequence
-from keras.preprocessing import text
 
-
-# from sklearn.base import BaseEstimator
-# from sklearn.base import ClassifierMixin
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelBinarizer
 
 logger = logging.getLogger(__name__)
-
 
 raw_categorical_targets = [
     'Pattern', 'Collar Type',
@@ -58,86 +35,6 @@ categorical_targets = [
 
 categorical_features = [
     'nouns', 'numbers']
-
-USE_MODULE_URL = "https://tfhub.dev/google/universal-sentence-encoder/2"
-USE_EMBED = hub.Module(USE_MODULE_URL, trainable=True)
-# ELMO_MODULE_URL = how"https://tfhub.dev/google/elmo/2"
-# ELMO_EMBED = hub.Module(ELMO_MODULE_URL, trainable=True)
-
-
-def USE_Embedding(x):
-    return USE_EMBED(tf.squeeze(tf.cast(x, tf.string)), signature="default", as_dict=True)["default"]
-#end def
-
-
-# def ELMO_Embedding(x):
-#     return ELMO_EMBED(tf.squeeze(tf.cast(x, tf.string)), signature="default", as_dict=True)["default"]
-# #end def
-
-
-def print_header(text, width=30, char='='):
-    print('\n' + char * width)
-    print(text)
-    print(char * width)
-#end def
-
-
-def display_null_percentage(data):
-    print_header('Percentage of Nulls')
-    df = data.isnull().sum().reset_index().rename(columns={0: 'Count', 'index': 'Column'})
-    df['Frequency'] = df['Count'] / data.shape[0] * 100
-    pd.options.display.float_format = '{:.2f}%'.format
-    print(df)
-    pd.options.display.float_format = None
-#end def
-
-
-def display_category_counts(data, categorical_features):
-    print_header('Category Counts for Categorical Features')
-    for categorical_feature in categorical_features:
-        print('-' * 30)
-        print(categorical_feature)
-        print(data[categorical_feature].value_counts(dropna=False))
-#end def
-
-
-def analyse(df, categorical_targets):
-    print(df.info())
-    print('='*100)
-
-    print(df.head())
-    print('='*100)
-
-    print(df.describe())
-    print('='*100)
-
-    print(df.nunique())
-    print('='*100)
-
-    display_null_percentage(df)  # No missing hahaha :) :) :)
-    print('='*100)
-
-    display_category_counts(data=df, categorical_features=categorical_targets)
-#end def
-
-
-def plot_history(h, path):
-    plt.figure(figsize=(10, 4))
-    plt.subplot(1, 2, 1)
-    plt.plot(h.history['loss'])
-    plt.plot(h.history['val_loss'])
-    plt.legend(['loss', 'val_loss'])
-    plt.ylabel('loss')
-    plt.xlabel('epoch')
-
-    plt.subplot(1, 2, 2)
-    plt.plot(h.history['acc'])
-    plt.plot(h.history['val_acc'])
-    plt.legend(['acc', 'val_acc'])
-    plt.ylabel('acc')
-    plt.xlabel('epoch')
-    plt.savefig(path)
-#end def
 
 
 def read(df_path, mapping_path=None, quick=False):
@@ -175,49 +72,11 @@ def read(df_path, mapping_path=None, quick=False):
         #end for
     #end if
 
-    # # Translate to english
-    # logger.info("Translating....")
-    # translator = Translator(to_lang="en", from_lang='ms', provider='mymemory')
-    # df['title'] = df.apply(lambda x: to_en(x.title, translator) if x.lang != 'en' else x.title, axis=1)
-    # logger.info("Done translating....")
-
     df[categorical_features] = df[categorical_features].fillna('unk')
 
     logger.info("Done reading in {} data....".format(df.shape[0]))
 
     return (df, mapping_dict) if mapping_path is not None else df
-#end def
-
-
-def auc(y_true, y_pred):
-    def _binary_PFA(y_true, y_pred, threshold=K.variable(value=0.5)):
-        # PFA, prob false alert for binary classifier
-        y_pred = K.cast(y_pred >= threshold, 'float32')
-        # N = total number of negative labels
-        N = K.sum(1 - y_true)
-        # FP = total number of false alerts, alerts from the negative class labels
-        FP = K.sum(y_pred - y_pred * y_true)    
-        return FP/N
-    #end def
-
-    def _binary_PTA(y_true, y_pred, threshold=K.variable(value=0.5)):
-        # P_TA prob true alerts for binary classifier
-        y_pred = K.cast(y_pred >= threshold, 'float32')
-        # P = total number of positive labels
-        P = K.sum(y_true)
-        # TP = total number of correct alerts, alerts from the positive class labels
-        TP = K.sum(y_pred * y_true)    
-        return TP/P
-    #end def
-
-    # AUC
-    ptas = tf.stack([_binary_PTA(y_true, y_pred, k) for k in np.linspace(0, 1, 1000)], axis=0)
-    pfas = tf.stack([_binary_PFA(y_true, y_pred, k) for k in np.linspace(0, 1, 1000)], axis=0)
-    pfas = tf.concat([tf.ones((1, )), pfas], axis=0)
-    binSizes = -(pfas[1:]-pfas[:-1])
-    s = ptas*binSizes
-
-    return K.sum(s, axis=0)
 #end def
 
 
@@ -275,8 +134,8 @@ def batch_iter(
                 end_index = min((i + 1) * batch_size, data_size)
 
                 X_title_batch = [X_title[i] for i in shuffled_indices[start_index:end_index]]
-                X_nouns_batch = [x for x in X_nouns[start_index:end_index]]
-                X_numbers_batch = [x for x in X_numbers[start_index:end_index]]
+                X_nouns_batch = [X_nouns[i] for i in shuffled_indices[start_index:end_index]]
+                X_numbers_batch = [X_numbers[i] for i in shuffled_indices[start_index:end_index]]
                 y_batch = [y[i] for i in shuffled_indices[start_index:end_index]]
 
                 yield ({'title_input': np.asarray(X_title_batch),
@@ -318,7 +177,7 @@ def train(
     # define early stopping callback
     callbacks_list = []
     if y_val is not None:
-        early_stopping = dict(monitor='val_loss', patience=2, min_delta=0.0001, verbose=1)
+        early_stopping = dict(monitor='val_loss', patience=1, min_delta=0.0001, verbose=1)
         model_checkpoint = dict(filepath=weights_path + weights_prefix + '_{val_loss:.5f}_{loss:.5f}_{epoch:04d}.weights.h5',
                                 save_best_only=True,
                                 save_weights_only=True,
@@ -393,20 +252,19 @@ def test(
     batch_size=128, **kwargs):
 
     def _second_largest(numbers):
-        count = 0
-        m1 = m2 = float('-inf')
+        if (len(numbers) < 2):
+            return
+        if ((len(numbers) == 2) and (numbers[0] == numbers[1])):
+            return
+        dup_items = set()
+        uniq_items = []
         for x in numbers:
-            count += 1
-            if x > m2:
-                if x >= m1:
-                    m1, m2 = x, m1
-                else:
-                    m2 = x
-        return m2 if count >= 2 else None
-    #end def
+            if x not in dup_items:
+                uniq_items.append(x)
+                dup_items.add(x)
+        uniq_items.sort()
 
-    def _larger(a, b):
-        return True if (a >= b) else False
+        return uniq_items[-2]
     #end def
 
     test_steps, test_batches = predict_iter(
@@ -418,29 +276,10 @@ def test(
     largest = [max(p) for p in proba]
     second_largest = [_second_largest(p) for p in proba]
 
-    first_pred = [str(mapping[lb.classes_[j]]) for i, p in enumerate(proba) for j, _p in enumerate(p) if abs(_p - largest[i]) < 0.00000001]
-    second_pred = [str(mapping[lb.classes_[j]]) for i, p in enumerate(proba) for j, _p in enumerate(p) if abs(_p - second_largest[i]) < 0.00000001]
+    first_pred = [str(mapping[lb.classes_[j]]) for i, p in enumerate(proba) for j, _p in enumerate(p) if _p == largest[i]]
+    second_pred = [str(mapping[lb.classes_[j]]) for i, p in enumerate(proba) for j, _p in enumerate(p) if _p == second_largest[i]]
 
     return [first_pred[i] + ' ' + second_pred[i] for i in range(len(proba))]
-#end def
-
-
-def undersampling(df, y, proportion=0.15):
-    size = df.shape[0]
-    thresh = size * proportion
-
-    label_counts = df[y].value_counts()
-
-    keep_index = []
-
-    for i, row in df.iterrows():
-        label = row[y]
-        r = min(thresh / label_counts[label], 1.0)
-        if random.random() < r:
-            keep_index.append(row.name)
-    #end for
-
-    return df.loc[keep_index]
 #end def
 
 
@@ -471,8 +310,6 @@ def main():
     train_dict = dict(batch_size=batch_size, epochs=epochs)
     test_df = read(A.test)
     test_dict = dict(batch_size=batch_size, epochs=epochs)
-    # analyse(train_df, categorical_targets)
-    # input()
 
     if validate:
         train_df, val_df = train_test_split(train_df, test_size=0.1, random_state=A.seed)
@@ -483,17 +320,12 @@ def main():
     lb_dict = dict()
     for y in categorical_targets:
         lb_dict[y] = LabelBinarizer()
-        # proportion = max(1 / len(mapping_dict[y]), 0.03)
         to_be_trained_df = train_df.loc[train_df[y] != 'unk']
-        # to_be_trained_df = undersampling(
-        #     to_be_trained_df, y, proportion)
 
         train_dict['X_' + y + '_train_index'] = list(to_be_trained_df.index.values)
         train_dict['y_' + y + '_train'] = lb_dict[y].fit_transform(to_be_trained_df[y][train_dict['X_' + y + '_train_index']])
         if validate:
             to_be_validated_df = val_df.loc[val_df[y] != 'unk']
-            # to_be_validated_df = undersampling(
-            #     to_be_validated_df, y, proportion)
             train_dict['X_' + y + '_val_index'] = list(to_be_validated_df.index.values)
             train_dict['y_' + y + '_val'] = lb_dict[y].transform(to_be_validated_df[y][train_dict['X_' + y + '_val_index']])
     #end for
@@ -503,19 +335,6 @@ def main():
         print('='*50)
         print(y)
         print('='*50)
-        # title_vec = TfidfVectorizer(
-        #     max_features=8192,
-        #     sublinear_tf=True,
-        #     strip_accents='unicode',
-        #     stop_words='english',
-        #     analyzer='word',
-        #     token_pattern=r'\w{1,}',
-        #     ngram_range=(1, 4),
-        #     dtype=np.float32,
-        #     norm='l2',
-        #     min_df=5,
-        #     max_df=.9)
-
         title_vec = CountVectorizer(
             max_features=8192,
             strip_accents='unicode',

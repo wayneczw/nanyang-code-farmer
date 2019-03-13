@@ -1,15 +1,16 @@
 import cv2
 import gc
+import joblib
 import logging
 import multiprocessing as mp
 import numpy as np
 import pandas as pd
-import joblib
 
 from argparse import ArgumentParser
 from multiprocessing import cpu_count
 
-from keras.applications import ResNet50, NASNetMobile
+from keras.applications import NASNetMobile
+from keras.applications import ResNet50
 from keras.applications.inception_v3 import preprocess_input
 from keras.layers import GlobalAveragePooling2D
 from keras.layers import Input
@@ -108,8 +109,8 @@ def main():
     cnn_model = NASNetMobile(include_top=False, input_shape=(width, width, 3), weights='imagenet')
     x_input = Input((width, width, 3), name='input')
     x = Lambda(preprocess_input, name='preprocessing')(x_input)
-    output = cnn_model(x)  # Transfer Learning
-    # output = GlobalAveragePooling2D(name='output')(x)
+    x = cnn_model(x)  # Transfer Learning
+    output = GlobalAveragePooling2D(name='output')(x)
     model = Model(inputs=[x_input], outputs=[output])
 
     # load data

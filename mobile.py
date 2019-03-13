@@ -1,3 +1,4 @@
+import joblib
 import json
 import logging
 import numpy as np
@@ -41,6 +42,9 @@ categorical_targets = [
 categorical_features = [
     'nouns', 'numbers']
 
+continuous_features = [
+    "operating system_count", "operating_count", "system_count", "os_count", "symbian_count", "windows_count", "samsung_count", "blackberry_count", "nokia_count", "android_count", "ios_count", "features_count", "expandable memory_count", "touchscreen_count", "fingerprint sensor_count", "dustproof_count", "waterproof_count", "wifi_count", "gps_count", "network_count", "connections_count", "4g_count", "2g_count", "3g_count", "3.5g_count", "memory_count", "ram_count", "4gb_count", "2gb_count", "1.5gb_count", "16gb_count", "512mb_count", "8gb_count", "3gb_count", "10gb_count", "1gb_count", "6gb_count", "warranty_count", "period_count", "yr_count", "mth_count", "year_count", "month_count", "years_count", "months_count", "7 months_count", "4 months_count", "6 months_count", "3 months_count", "10 years_count", "2 month_count", "11 months_count", "10 months_count", "5 months_count", "3 years_count", "2 years_count", "1 month_count", "18 months_count", "1 year_count", "storage_count", "capacity_count", "gb_count", "mb_count", "256gb_count", "128gb_count", "64gb_count", "512gb_count", "4mb_count", "128mb_count", "32gb_count", "256mb_count", "color_count", "colour_count", "family_count", "blue_count", "gold_count", "brown_count", "navy blue_count", "yellow_count", "neutral_count", "rose gold_count", "light blue_count", "dark grey_count", "silver_count", "pink_count", "gray_count", "army_count", "green_count", "army green_count", "deep_count", "deep blue_count", "purple_count", "rose_count", "light_count", "grey_count", "light grey_count", "black_count", "deep black_count", "off_count", "white_count", "off white_count", "multicolor_count", "apricot_count", "orange_count", "red_count", "camera_count", "mp_count", "single_count", "42mp_count", "dua slot_count", "5 mp_count", "3 mp_count", "1 mp_count", "8 mp_count", "single camera_count", "24 mp_count", "16mp_count", "13mp_count", "6 mp_count", "10mp_count", "2 mp_count", "20 mp_count", "4 mp_count", "phone_count", "screen_count", "size_count", "inch_count", "inches_count", "4.6 to 5 inches_count", "4.1 to 4.5 inches_count", "less than 3.5 inches_count", "3.6 to 4 inches_count", "more than 5.6 inches_count", "5.1 to 5.5 inches_count"]
+
 
 def read(df_path, mapping_path=None, quick=False):
     def to_en(text, translator):
@@ -78,7 +82,9 @@ def read(df_path, mapping_path=None, quick=False):
     #end if
 
     df[categorical_features] = df[categorical_features].fillna('unk')
-
+    df['translated'] = df['translated'].fillna('unk')
+    df['ocr'] = df['ocr'].fillna('unk')
+    df['colors'] = df['colors'].fillna('unk')
     logger.info("Done reading in {} data....".format(df.shape[0]))
 
     return (df, mapping_dict) if mapping_path is not None else df
@@ -87,8 +93,13 @@ def read(df_path, mapping_path=None, quick=False):
 
 def build_model(
     title_input_shape,
+    translated_input_shape,
+    ocr_input_shape,
+    colors_input_shape,
     nouns_input_shape,
     numbers_input_shape,
+    cont_input_shape,
+    img_input_shape,
     output_shape,
     brand_input_shape=None,
     model_input_shape=None,
@@ -96,10 +107,20 @@ def build_model(
     activity_regularizer=0, bias_regularizer=0):
     
     title_input = Input(title_input_shape, name='title_input')
-    title = Dense(2048)(title_input)
+    translated_input = Input(translated_input_shape, name='translated_input')
+    ocr_input = Input(ocr_input_shape, name='ocr_input')
+
+    title = concatenate([title_input, translated_input, ocr_input])
+    title = Dense(4096)(title)
+    title = Dropout(dropout_rate)(title)
+    title = Dense(2048)(title)
     title = Dropout(dropout_rate)(title)
     title = Dense(512)(title)
     title = Dropout(dropout_rate)(title)
+
+    colors_input = Input(colors_input_shape, name='colors_input')
+    colors = Dense(128)(colors_input)
+    colors = Dropout(dropout_rate)(colors)
 
     nouns_input = Input(nouns_input_shape, name='nouns_input')
     nouns = Dense(256)(nouns_input)
@@ -109,7 +130,15 @@ def build_model(
     numbers = Dense(256)(numbers_input)
     numbers = Dropout(dropout_rate)(numbers)
 
-    inputs = [title_input, nouns_input, numbers_input]
+    cont_input = Input(cont_input_shape, name='cont_input')
+    cont = Dense(128)(cont_input)
+    cont = Dropout(dropout_rate)(cont)
+
+    img_input = Input(img_input_shape, name='img_input')
+    img = Dense(512)(img_input)
+    img = Dropout(dropout_rate)(img)
+
+    inputs = [title_input, translated_input, ocr_input, colors_input, nouns_input, numbers_input, cont_input, img_input]
 
     if brand_input_shape is not None:
         brand_input = Input(brand_input_shape, name='brand_input')
@@ -124,11 +153,11 @@ def build_model(
         inputs.append(model_input)
 
     if brand_input_shape is not None and model_input_shape is not None:
-        x = concatenate([title, nouns, numbers, brand, model])
+        x = concatenate([title, colors, nouns, numbers, cont, img, brand, model])
     elif brand_input_shape is not None:
-        x = concatenate([title, nouns, numbers, brand])
+        x = concatenate([title, colors, nouns, numbers, cont, img, brand])
     else:
-        x = concatenate([title, nouns, numbers])
+        x = concatenate([title, colors, nouns, numbers, cont, img])
 
     output = Dense(output_shape, activation='softmax', name='output')(x)
 
@@ -143,7 +172,7 @@ def build_model(
 
 
 def batch_iter(
-    X_title, X_nouns, X_numbers,
+    X_title, X_translated, X_ocr, X_colors, X_nouns, X_numbers, X_cont, X_img,
     y,
     X_brand=None, X_model=None,
     batch_size=128, **kwargs):
@@ -161,34 +190,55 @@ def batch_iter(
                 end_index = min((i + 1) * batch_size, data_size)
 
                 X_title_batch = [X_title[i] for i in shuffled_indices[start_index:end_index]]
+                X_translated_batch = [X_translated[i] for i in shuffled_indices[start_index:end_index]]
+                X_ocr_batch = [X_ocr[i] for i in shuffled_indices[start_index:end_index]]
+                X_colors_batch = [X_colors[i] for i in shuffled_indices[start_index:end_index]]
                 X_nouns_batch = [X_nouns[i] for i in shuffled_indices[start_index:end_index]]
                 X_numbers_batch = [X_numbers[i] for i in shuffled_indices[start_index:end_index]]
+                X_cont_batch = [X_cont[i] for i in shuffled_indices[start_index:end_index]]
+                X_img_batch = [X_img[i] for i in shuffled_indices[start_index:end_index]]
+
                 y_batch = [y[i] for i in shuffled_indices[start_index:end_index]]
 
                 if X_brand is not None:
-                    X_brand_batch = [x for x in X_brand[start_index:end_index]]
+                    X_brand_batch = [X_brand[i] for i in shuffled_indices[start_index:end_index]]
                 if X_model is not None:
-                    X_model_batch = [x for x in X_model[start_index:end_index]]
+                    X_model_batch = [X_model[i] for i in shuffled_indices[start_index:end_index]]
                 
                 if X_model is not None:
                     yield ({'title_input': np.asarray(X_title_batch),
+                            'translated_input': np.asarray(X_translated_batch),
+                            'ocr_input': np.asarray(X_ocr_batch),
+                            'colors_input': np.asarray(X_colors_batch),
                             'nouns_input': np.asarray(X_nouns_batch),
                             'numbers_input': np.asarray(X_numbers_batch),
+                            'cont_input': np.asarray(X_cont_batch),
+                            'img_input': np.asarray(X_img_batch),
                             'brand_input': np.asarray(X_brand_batch),
                             'model_input': np.asarray(X_model_batch),
                             },
                             {'output': np.asarray(y_batch)})
                 elif X_brand is not None:
                     yield ({'title_input': np.asarray(X_title_batch),
+                            'translated_input': np.asarray(X_translated_batch),
+                            'ocr_input': np.asarray(X_ocr_batch),
+                            'colors_input': np.asarray(X_colors_batch),
                             'nouns_input': np.asarray(X_nouns_batch),
                             'numbers_input': np.asarray(X_numbers_batch),
+                            'cont_input': np.asarray(X_cont_batch),
+                            'img_input': np.asarray(X_img_batch),
                             'brand_input': np.asarray(X_brand_batch),
                             },
                             {'output': np.asarray(y_batch)})
                 else:
                     yield ({'title_input': np.asarray(X_title_batch),
+                            'translated_input': np.asarray(X_translated_batch),
+                            'ocr_input': np.asarray(X_ocr_batch),
+                            'colors_input': np.asarray(X_colors_batch),
                             'nouns_input': np.asarray(X_nouns_batch),
-                            'numbers_input': np.asarray(X_numbers_batch)
+                            'numbers_input': np.asarray(X_numbers_batch),
+                            'cont_input': np.asarray(X_cont_batch),
+                            'img_input': np.asarray(X_img_batch),
                             },
                             {'output': np.asarray(y_batch)})
                 #end if
@@ -202,10 +252,10 @@ def batch_iter(
 
 def train(
     model,
-    X_title_train, X_nouns_train, X_numbers_train,
+    X_title_train, X_translated_train, X_ocr_train, X_colors_train, X_nouns_train, X_numbers_train, X_cont_train, X_img_train,
     y_train,
     X_brand_train=None, X_model_train=None,
-    X_title_val=None, X_nouns_val=None, X_numbers_val=None,
+    X_title_val=None, X_translated_val=None, X_ocr_val=None, X_colors_val=None, X_nouns_val=None, X_numbers_val=None, X_cont_val=None, X_img_val=None,
     y_val=None,
     X_brand_val=None, X_model_val=None,
     weights_path='./weights/', weights_prefix='',
@@ -219,20 +269,22 @@ def train(
     tf_session.run(init_op)
 
     train_steps, train_batches = batch_iter(
-        X_title_train, X_nouns_train, X_numbers_train, y_train,
+        X_title_train, X_translated_train, X_ocr_train, X_colors_train, X_nouns_train, X_numbers_train, X_cont_train, X_img_train,
+        y_train,
         X_brand_train, X_model_train,
         batch_size=batch_size)
 
     if y_val is not None:
         val_steps, val_batches = batch_iter(
-            X_title_val, X_nouns_val, X_numbers_val, y_val,
+            X_title_val, X_translated_val, X_ocr_val, X_colors_val, X_nouns_val, X_numbers_val, X_cont_val, X_img_val,
+            y_val,
             X_brand_val, X_model_val,
             batch_size=batch_size)
 
     # define early stopping callback
     callbacks_list = []
     if y_val is not None:
-        early_stopping = dict(monitor='val_loss', patience=2, min_delta=0.0001, verbose=1)
+        early_stopping = dict(monitor='val_loss', patience=1, min_delta=0.0001, verbose=1)
         model_checkpoint = dict(filepath=weights_path + weights_prefix + '_{val_loss:.5f}_{loss:.5f}_{epoch:04d}.weights.h5',
                                 save_best_only=True,
                                 save_weights_only=True,
@@ -276,7 +328,7 @@ def train(
 
 
 def predict_iter(
-    X_title, X_nouns, X_numbers,
+    X_title, X_translated, X_ocr, X_colors, X_nouns, X_numbers, X_cont, X_img,
     X_brand=None, X_model=None,
     batch_size=128, **kwargs):
 
@@ -289,8 +341,14 @@ def predict_iter(
             end_index = min((i + 1) * batch_size, data_size)
 
             X_title_batch = [x for x in X_title[start_index:end_index]]
+            X_translated_batch = [x for x in X_translated[start_index:end_index]]
+            X_ocr_batch = [x for x in X_ocr[start_index:end_index]]
+            X_colors_batch = [x for x in X_colors[start_index:end_index]]
             X_nouns_batch = [x for x in X_nouns[start_index:end_index]]
             X_numbers_batch = [x for x in X_numbers[start_index:end_index]]
+            X_cont_batch = [x for x in X_cont[start_index:end_index]]
+            X_img_batch = [x for x in X_img[start_index:end_index]]
+
             if X_brand is not None:
                 X_brand_batch = [x for x in X_brand[start_index:end_index]]
             if X_model is not None:
@@ -298,21 +356,36 @@ def predict_iter(
 
             if X_model is not None:
                 yield ({'title_input': np.asarray(X_title_batch),
+                        'translated_input': np.asarray(X_translated_batch),
+                        'ocr_input': np.asarray(X_ocr_batch),
+                        'colors_input': np.asarray(X_colors_batch),
                         'nouns_input': np.asarray(X_nouns_batch),
                         'numbers_input': np.asarray(X_numbers_batch),
+                        'cont_input': np.asarray(X_cont_batch),
+                        'img_input': np.asarray(X_img_batch),
                         'brand_input': np.asarray(X_brand_batch),
                         'model_input': np.asarray(X_model_batch),
                         })
             elif X_brand is not None:
                 yield ({'title_input': np.asarray(X_title_batch),
+                        'translated_input': np.asarray(X_translated_batch),
+                        'ocr_input': np.asarray(X_ocr_batch),
+                        'colors_input': np.asarray(X_colors_batch),
                         'nouns_input': np.asarray(X_nouns_batch),
                         'numbers_input': np.asarray(X_numbers_batch),
+                        'cont_input': np.asarray(X_cont_batch),
+                        'img_input': np.asarray(X_img_batch),
                         'brand_input': np.asarray(X_brand_batch),
                         })
             else:
                 yield ({'title_input': np.asarray(X_title_batch),
+                        'translated_input': np.asarray(X_translated_batch),
+                        'ocr_input': np.asarray(X_ocr_batch),
+                        'colors_input': np.asarray(X_colors_batch),
                         'nouns_input': np.asarray(X_nouns_batch),
-                        'numbers_input': np.asarray(X_numbers_batch)
+                        'numbers_input': np.asarray(X_numbers_batch),
+                        'cont_input': np.asarray(X_cont_batch),
+                        'img_input': np.asarray(X_img_batch),
                         })
             #end if
         #end for
@@ -324,7 +397,7 @@ def predict_iter(
 
 def test(
     model,
-    X_title_test, X_nouns_test, X_numbers_test,
+    X_title_test, X_translated_test, X_ocr_test, X_colors_test, X_nouns_test, X_numbers_test, X_cont_test, X_img_test,
     lb, mapping,
     X_brand_test=None, X_model_test=None,
     batch_size=128, **kwargs):
@@ -346,7 +419,7 @@ def test(
     #end def
 
     test_steps, test_batches = predict_iter(
-        X_title_test, X_nouns_test, X_numbers_test,
+        X_title_test, X_translated_test, X_ocr_test, X_colors_test, X_nouns_test, X_numbers_test, X_cont_test, X_img_test,
         X_brand_test, X_model_test,
         batch_size=batch_size, **kwargs)
 
@@ -367,6 +440,8 @@ def main():
     argparser.add_argument('-i', '--train', type=str, metavar='<train_set>', required=True, help='Training data set.')
     argparser.add_argument('-t', '--test', type=str, metavar='<test_set>', required=True, help='Test data set.')
     argparser.add_argument('-m', '--mapping', type=str, metavar='<mapping_json>', required=True, help='Mapping json file.')
+    argparser.add_argument('--train_img', type=str, default="", required=True, help='Path to folder which contains the x_image folder')
+    argparser.add_argument('--test_img', type=str, default="", required=True, help='Path to folder which contains the x_image folder')
     argparser.add_argument('--seed', type=int, default=0, help='Random seed.')
     A = argparser.parse_args()
 
@@ -387,11 +462,16 @@ def main():
     # read in data
     train_df, mapping_dict = read(A.train, A.mapping, quick=quick)
     train_dict = dict(batch_size=batch_size, epochs=epochs)
+    train_img = joblib.load(A.train_img)
     test_df = read(A.test)
     test_dict = dict(batch_size=batch_size, epochs=epochs)
+    test_img = joblib.load(A.test_img)
+    # analyse(train_df, categorical_targets)
+    # input()
 
     if validate:
         train_df, val_df = train_test_split(train_df, test_size=0.1, random_state=A.seed)
+        train_img, val_img = train_test_split(train_img, test_size=0.1, random_state=A.seed)
         train_df = train_df.reset_index(drop=True)
         val_df = val_df.reset_index(drop=True)
 
@@ -405,6 +485,8 @@ def main():
         train_dict['y_' + y + '_train'] = lb_dict[y].fit_transform(to_be_trained_df[y][train_dict['X_' + y + '_train_index']])
         if validate:
             to_be_validated_df = val_df.loc[val_df[y] != 'unk']
+            # to_be_validated_df = undersampling(
+            #     to_be_validated_df, y, proportion)
             train_dict['X_' + y + '_val_index'] = list(to_be_validated_df.index.values)
             train_dict['y_' + y + '_val'] = lb_dict[y].transform(to_be_validated_df[y][train_dict['X_' + y + '_val_index']])
     #end for
@@ -414,6 +496,7 @@ def main():
         print('='*50)
         print(y)
         print('='*50)
+
         title_vec = CountVectorizer(
             max_features=8192,
             strip_accents='unicode',
@@ -423,10 +506,34 @@ def main():
             ngram_range=(1, 4),
             dtype=np.float32,
             min_df=5,
-            max_df=.9).fit(train_df['title'][train_dict['X_' + y + '_train_index']].append(val_df['title'][train_dict['X_' + y + '_val_index']]).append(test_df['title']))
+            # max_df=.9).fit(train_df['title'][train_dict['X_' + y + '_train_index']].append(val_df['title'][train_dict['X_' + y + '_val_index']]).append(test_df['title']))
+            max_df=.9).fit(train_df['title'][train_dict['X_' + y + '_train_index']].append(val_df['title'][train_dict['X_' + y + '_val_index']]))
 
-        nouns_vec = CountVectorizer(
-            max_features=2056,
+        translated_vec = CountVectorizer(
+            max_features=4096,
+            strip_accents='unicode',
+            stop_words='english',
+            analyzer='word',
+            token_pattern=r'\w{1,}',
+            ngram_range=(1, 4),
+            dtype=np.float32,
+            min_df=5,
+            # max_df=.9).fit(train_df['translated'][train_dict['X_' + y + '_train_index']].append(val_df['translated'][train_dict['X_' + y + '_val_index']]).append(test_df['translated']))
+            max_df=.9).fit(train_df['translated'][train_dict['X_' + y + '_train_index']].append(val_df['translated'][train_dict['X_' + y + '_val_index']]))
+
+        ocr_vec = CountVectorizer(
+            max_features=2048,
+            strip_accents='unicode',
+            stop_words='english',
+            analyzer='word',
+            token_pattern=r'\w{1,}',
+            ngram_range=(1, 4),
+            dtype=np.float32,
+            min_df=5,
+            max_df=.9).fit(train_df['ocr'][train_dict['X_' + y + '_train_index']].append(val_df['ocr'][train_dict['X_' + y + '_val_index']]).append(test_df['ocr']))
+
+        colors_vec = CountVectorizer(
+            max_features=2048,
             strip_accents='unicode',
             stop_words='english',
             analyzer='word',
@@ -434,7 +541,19 @@ def main():
             ngram_range=(1, 3),
             dtype=np.float32,
             min_df=5,
-            max_df=.9).fit(train_df['nouns'][train_dict['X_' + y + '_train_index']].append(val_df['nouns'][train_dict['X_' + y + '_val_index']]).append(test_df['nouns']))
+            max_df=.9).fit(train_df['colors'][train_dict['X_' + y + '_train_index']].append(val_df['colors'][train_dict['X_' + y + '_val_index']]).append(test_df['colors']))
+
+        nouns_vec = CountVectorizer(
+            max_features=2048,
+            strip_accents='unicode',
+            stop_words='english',
+            analyzer='word',
+            token_pattern=r'\w{1,}',
+            ngram_range=(1, 3),
+            dtype=np.float32,
+            min_df=5,
+            # max_df=.9).fit(train_df['nouns'][train_dict['X_' + y + '_train_index']].append(val_df['nouns'][train_dict['X_' + y + '_val_index']]).append(test_df['nouns']))
+            max_df=.9).fit(train_df['nouns'][train_dict['X_' + y + '_train_index']].append(val_df['nouns'][train_dict['X_' + y + '_val_index']]))
 
         numbers_vec = CountVectorizer(
             max_features=256,
@@ -445,11 +564,17 @@ def main():
             ngram_range=(1, 2),
             dtype=np.float32,
             min_df=5,
-            max_df=.9).fit(train_df['numbers'][train_dict['X_' + y + '_train_index']].append(val_df['numbers'][train_dict['X_' + y + '_val_index']]).append(test_df['numbers']))
+            # max_df=.9).fit(train_df['numbers'][train_dict['X_' + y + '_train_index']].append(val_df['numbers'][train_dict['X_' + y + '_val_index']]).append(test_df['numbers']))
+            max_df=.9).fit(train_df['numbers'][train_dict['X_' + y + '_train_index']].append(val_df['numbers'][train_dict['X_' + y + '_val_index']]))
 
         train_dict['X_title_train'] = title_vec.transform(train_df['title'][train_dict['X_' + y + '_train_index']]).toarray()
+        train_dict['X_translated_train'] = translated_vec.transform(train_df['translated'][train_dict['X_' + y + '_train_index']]).toarray()        
+        train_dict['X_ocr_train'] = ocr_vec.transform(train_df['ocr'][train_dict['X_' + y + '_train_index']]).toarray()        
+        train_dict['X_colors_train'] = colors_vec.transform(train_df['colors'][train_dict['X_' + y + '_train_index']]).toarray()                
         train_dict['X_nouns_train'] = nouns_vec.transform(train_df['nouns'][train_dict['X_' + y + '_train_index']]).toarray()
         train_dict['X_numbers_train'] = numbers_vec.transform(train_df['numbers'][train_dict['X_' + y + '_train_index']]).toarray()
+        train_dict['X_cont_train'] = train_df[continuous_features].values[train_dict['X_' + y + '_train_index']]
+        train_dict['X_img_train'] = train_img[train_dict['X_' + y + '_train_index']]
 
         brand_input_shape = None
         model_input_shape = None
@@ -463,8 +588,13 @@ def main():
 
         if validate:
             train_dict['X_title_val'] = title_vec.transform(val_df['title'][train_dict['X_' + y + '_val_index']]).toarray()
+            train_dict['X_translated_val'] = translated_vec.transform(val_df['translated'][train_dict['X_' + y + '_val_index']]).toarray()
+            train_dict['X_ocr_val'] = ocr_vec.transform(val_df['ocr'][train_dict['X_' + y + '_val_index']]).toarray()
+            train_dict['X_colors_val'] = colors_vec.transform(val_df['colors'][train_dict['X_' + y + '_val_index']]).toarray()
             train_dict['X_nouns_val'] = nouns_vec.transform(val_df['nouns'][train_dict['X_' + y + '_val_index']]).toarray()
             train_dict['X_numbers_val'] = numbers_vec.transform(val_df['numbers'][train_dict['X_' + y + '_val_index']]).toarray()
+            train_dict['X_cont_val'] = val_df[continuous_features].values[train_dict['X_' + y + '_val_index']]
+            train_dict['X_img_val'] = val_img[train_dict['X_' + y + '_val_index']]
             if y != 'Brand':
                 train_dict['X_brand_val'] = lb_dict['Brand'].transform(train_df['Brand'][train_dict['X_' + y + '_val_index']])
                 if y != 'Phone Model':
@@ -472,8 +602,13 @@ def main():
 
         model = build_model(
             title_input_shape=train_dict['X_title_train'].shape[1:],
+            translated_input_shape=train_dict['X_translated_train'].shape[1:],
+            ocr_input_shape=train_dict['X_ocr_train'].shape[1:],
+            colors_input_shape=train_dict['X_colors_train'].shape[1:],
             nouns_input_shape=train_dict['X_nouns_train'].shape[1:],
             numbers_input_shape=train_dict['X_numbers_train'].shape[1:],
+            cont_input_shape=train_dict['X_cont_train'].shape[1:],
+            img_input_shape=train_dict['X_img_train'].shape[1:],
             brand_input_shape=brand_input_shape,
             model_input_shape=model_input_shape,
             output_shape=train_dict['y_' + y + '_train'].shape[1])
@@ -490,8 +625,14 @@ def main():
         test_dict['lb'] = lb_dict[y]
         test_dict['mapping'] = mapping_dict[y]
         test_dict['X_title_test'] = title_vec.transform(test_df['title'].values).toarray()
+        test_dict['X_translated_test'] = translated_vec.transform(test_df['translated'].values).toarray()
+        test_dict['X_ocr_test'] = ocr_vec.transform(test_df['ocr'].values).toarray()
+        test_dict['X_colors_test'] = colors_vec.transform(test_df['colors'].values).toarray()
         test_dict['X_nouns_test'] = nouns_vec.transform(test_df['nouns'].values).toarray()
         test_dict['X_numbers_test'] = numbers_vec.transform(test_df['numbers'].values).toarray()
+        test_dict['X_cont_test'] = test_df[continuous_features].values
+        test_dict['X_img_test'] = test_img
+
         if y != 'Brand':
             brand_mapping = dict((v, k) for k, v in mapping_dict['Brand'].items())
             brands = test_df['Brand'].apply(lambda x: brand_mapping[int(x.split()[0])]).values
