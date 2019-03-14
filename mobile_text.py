@@ -232,7 +232,7 @@ def train(
     # define early stopping callback
     callbacks_list = []
     if y_val is not None:
-        early_stopping = dict(monitor='val_acc', patience=1, min_delta=0.0001, verbose=1)
+        early_stopping = dict(monitor='val_acc', patience=2, min_delta=0.0001, verbose=1)
         model_checkpoint = dict(filepath=weights_path + weights_prefix + '_{val_acc:.5f}_{acc:.5f}_{epoch:04d}.weights.h5',
                                 save_best_only=True,
                                 save_weights_only=True,
@@ -240,7 +240,7 @@ def train(
                                 period=1,
                                 verbose=1)
     else:
-        early_stopping = dict(monitor='acc', patience=1, min_delta=0.001, verbose=1)
+        early_stopping = dict(monitor='acc', patience=2, min_delta=0.001, verbose=1)
         model_checkpoint = dict(filepath=weights_path + weights_prefix + '_{acc:.5f}_{epoch:04d}.weights.h5',
                                 save_best_only=True,
                                 save_weights_only=True,
