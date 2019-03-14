@@ -135,7 +135,9 @@ def build_model(
     cont = Dropout(dropout_rate)(cont)
 
     img_input = Input(img_input_shape, name='img_input')
-    img = Dense(512)(img_input)
+    img = Dense(1024)(img_input)
+    img = Dropout(dropout_rate)(img)
+    img = Dense(512)(img)
     img = Dropout(dropout_rate)(img)
 
     inputs = [title_input, translated_input, ocr_input, colors_input, nouns_input, numbers_input, cont_input, img_input]
@@ -506,8 +508,8 @@ def main():
             ngram_range=(1, 4),
             dtype=np.float32,
             min_df=5,
-            # max_df=.9).fit(train_df['title'][train_dict['X_' + y + '_train_index']].append(val_df['title'][train_dict['X_' + y + '_val_index']]).append(test_df['title']))
-            max_df=.9).fit(train_df['title'][train_dict['X_' + y + '_train_index']].append(val_df['title'][train_dict['X_' + y + '_val_index']]))
+            # max_df=.9).fit(train_df['title'][train_dict['X_' + y + '_train_index']].append(test_df['title']))
+            max_df=.9).fit(train_df['title'][train_dict['X_' + y + '_train_index']].append(val_df['title'][train_dict['X_' + y + '_val_index']]).append(test_df['title']))
 
         translated_vec = CountVectorizer(
             max_features=4096,
@@ -518,8 +520,8 @@ def main():
             ngram_range=(1, 4),
             dtype=np.float32,
             min_df=5,
-            # max_df=.9).fit(train_df['translated'][train_dict['X_' + y + '_train_index']].append(val_df['translated'][train_dict['X_' + y + '_val_index']]).append(test_df['translated']))
-            max_df=.9).fit(train_df['translated'][train_dict['X_' + y + '_train_index']].append(val_df['translated'][train_dict['X_' + y + '_val_index']]))
+            # max_df=.9).fit(train_df['translated'][train_dict['X_' + y + '_train_index']].append(test_df['translated']))
+            max_df=.9).fit(train_df['translated'][train_dict['X_' + y + '_train_index']].append(val_df['translated'][train_dict['X_' + y + '_val_index']]).append(test_df['translated']))
 
         ocr_vec = CountVectorizer(
             max_features=2048,
@@ -530,6 +532,7 @@ def main():
             ngram_range=(1, 4),
             dtype=np.float32,
             min_df=5,
+            # max_df=.9).fit(train_df['ocr'][train_dict['X_' + y + '_train_index']].append(test_df['ocr']))
             max_df=.9).fit(train_df['ocr'][train_dict['X_' + y + '_train_index']].append(val_df['ocr'][train_dict['X_' + y + '_val_index']]).append(test_df['ocr']))
 
         colors_vec = CountVectorizer(
@@ -541,6 +544,7 @@ def main():
             ngram_range=(1, 3),
             dtype=np.float32,
             min_df=5,
+            # max_df=.9).fit(train_df['colors'][train_dict['X_' + y + '_train_index']].append(test_df['colors']))
             max_df=.9).fit(train_df['colors'][train_dict['X_' + y + '_train_index']].append(val_df['colors'][train_dict['X_' + y + '_val_index']]).append(test_df['colors']))
 
         nouns_vec = CountVectorizer(
@@ -552,8 +556,8 @@ def main():
             ngram_range=(1, 3),
             dtype=np.float32,
             min_df=5,
-            # max_df=.9).fit(train_df['nouns'][train_dict['X_' + y + '_train_index']].append(val_df['nouns'][train_dict['X_' + y + '_val_index']]).append(test_df['nouns']))
-            max_df=.9).fit(train_df['nouns'][train_dict['X_' + y + '_train_index']].append(val_df['nouns'][train_dict['X_' + y + '_val_index']]))
+            # max_df=.9).fit(train_df['nouns'][train_dict['X_' + y + '_train_index']].append(test_df['nouns']))
+            max_df=.9).fit(train_df['nouns'][train_dict['X_' + y + '_train_index']].append(val_df['nouns'][train_dict['X_' + y + '_val_index']]).append(test_df['nouns']))
 
         numbers_vec = CountVectorizer(
             max_features=256,
@@ -564,8 +568,8 @@ def main():
             ngram_range=(1, 2),
             dtype=np.float32,
             min_df=5,
-            # max_df=.9).fit(train_df['numbers'][train_dict['X_' + y + '_train_index']].append(val_df['numbers'][train_dict['X_' + y + '_val_index']]).append(test_df['numbers']))
-            max_df=.9).fit(train_df['numbers'][train_dict['X_' + y + '_train_index']].append(val_df['numbers'][train_dict['X_' + y + '_val_index']]))
+            # max_df=.9).fit(train_df['numbers'][train_dict['X_' + y + '_train_index']].append(test_df['numbers']))
+            max_df=.9).fit(train_df['numbers'][train_dict['X_' + y + '_train_index']].append(val_df['numbers'][train_dict['X_' + y + '_val_index']]).append(test_df['numbers']))
 
         train_dict['X_title_train'] = title_vec.transform(train_df['title'][train_dict['X_' + y + '_train_index']]).toarray()
         train_dict['X_translated_train'] = translated_vec.transform(train_df['translated'][train_dict['X_' + y + '_train_index']]).toarray()        

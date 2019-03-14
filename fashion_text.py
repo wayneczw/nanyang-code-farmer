@@ -344,6 +344,7 @@ def main():
             ngram_range=(1, 4),
             dtype=np.float32,
             min_df=5,
+            # max_df=.9).fit(train_df['title'][train_dict['X_' + y + '_train_index']].append(test_df['title']))
             max_df=.9).fit(train_df['title'][train_dict['X_' + y + '_train_index']].append(val_df['title'][train_dict['X_' + y + '_val_index']]).append(test_df['title']))
 
         nouns_vec = CountVectorizer(
@@ -355,6 +356,7 @@ def main():
             ngram_range=(1, 3),
             dtype=np.float32,
             min_df=5,
+            # max_df=.9).fit(train_df['nouns'][train_dict['X_' + y + '_train_index']].append(test_df['nouns']))
             max_df=.9).fit(train_df['nouns'][train_dict['X_' + y + '_train_index']].append(val_df['nouns'][train_dict['X_' + y + '_val_index']]).append(test_df['nouns']))
 
         numbers_vec = CountVectorizer(
@@ -366,6 +368,7 @@ def main():
             ngram_range=(1, 2),
             dtype=np.float32,
             min_df=5,
+            # max_df=.9).fit(train_df['numbers'][train_dict['X_' + y + '_train_index']].append(test_df['numbers']))
             max_df=.9).fit(train_df['numbers'][train_dict['X_' + y + '_train_index']].append(val_df['numbers'][train_dict['X_' + y + '_val_index']]).append(test_df['numbers']))
 
         train_dict['X_title_train'] = title_vec.transform(train_df['title'][train_dict['X_' + y + '_train_index']]).toarray()
