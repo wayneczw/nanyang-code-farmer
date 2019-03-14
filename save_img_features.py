@@ -48,30 +48,30 @@ def get_img_features(model, data):
 
 
 def resize331(img_path):
-    if not img_path.endswith('.jpg'):
-        img_path += '.jpg'
-    elif img_path.startswith('new_'):
-        img_path = img_path[4:]
+    # if not img_path.endswith('.jpg'):
+    #     img_path += '.jpg'
+    # elif img_path.startswith('new_'):
+    #     img_path = img_path[4:]
     img = cv2.imread(img_path)
     return cv2.resize(img, (331, 331))
 #end def
 
 
 def resize299(img_path):
-    if not img_path.endswith('.jpg'):
-        img_path += '.jpg'
-    elif img_path.startswith('new_'):
-        img_path = img_path[4:]
+    # if not img_path.endswith('.jpg'):
+    #     img_path += '.jpg'
+    # elif img_path.startswith('new_'):
+    #     img_path = img_path[4:]
     img = cv2.imread(img_path)
     return cv2.resize(img, (299, 299))
 #end def
 
 
 def resize224(img_path):
-    if not img_path.endswith('.jpg'):
-        img_path += '.jpg'
-    elif img_path.startswith('new_'):
-        img_path = img_path[4:]
+    # if not img_path.endswith('.jpg'):
+    #     img_path += '.jpg'
+    # elif img_path.startswith('new_'):
+    #     img_path = img_path[4:]
     img = cv2.imread(img_path)
     return cv2.resize(img, (224, 224))
 #end def
@@ -96,7 +96,7 @@ def main():
     argparser = ArgumentParser(description='Run machine learning experiment.')
     argparser.add_argument('-i', '--train', type=str, metavar='<train_set>', required=True, help='Training data set.')
     argparser.add_argument('-t', '--test', type=str, metavar='<test_set>', required=True, help='Test data set.')
-    argparser.add_argument('--image_folder', type=str, default="", required=True, help='Path to folder which contains the x_image folder')
+    # argparser.add_argument('--image_folder', type=str, default="", required=True, help='Path to folder which contains the x_image folder')
     A = argparser.parse_args()
 
     log_level = 'INFO'
@@ -116,6 +116,8 @@ def main():
     # load data
     logger.info('Featurizing train....')
     train_df = pd.read_csv(A.train)
+    train_df['image_path'] = train_df['image_path'].apply(lambda x: x if x.endswith('.jpg') else x + '.jpg')
+    train_df['image_path'] = train_df['image_path'].apply(lambda x: x[4:] if x.startswith('new_') else x)
     # train_df = train_df[:128]
 
     # get features
@@ -136,12 +138,15 @@ def main():
         #end if
         logger.info('Done with {}/{} batches....'.format(i+1, num_batches))
     #end for
-    joblib.dump(train, A.train.split('.')[0] + '_img_features_test.joblib', compress=True)
+
+    joblib.dump(train, A.train.split('.')[0] + '_img_features.joblib', compress=True)
     del train_df, train
     gc.collect()
 
     logger.info('Featurizing test....')
     test_df = pd.read_csv(A.test)
+    test_df['image_path'] = test_df['image_path'].apply(lambda x: x if x.endswith('.jpg') else x + '.jpg')
+    test_df['image_path'] = test_df['image_path'].apply(lambda x: x[4:] if x.startswith('new_') else x)
     # test_df = test_df[:128]
 
     batch_size = 4096
@@ -162,7 +167,7 @@ def main():
         logger.info('Done with {}/{} batches....'.format(i+1, num_batches))
     #end for
 
-    joblib.dump(test, A.test.split('.')[0] + '_img_features_test.joblib', compress=True)
+    joblib.dump(test, A.test.split('.')[0] + '_img_features.joblib', compress=True)
 #end def
 
 

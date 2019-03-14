@@ -35,7 +35,7 @@ chunker = RegexpParser(NP)
 # Keywords = ["benefits", "high", "pigmentation", "natural", "light", "hydrating", "durable", "oil", "control", "spf", "colour", "group", "emas", "rose", "1 warna", "9 color", "emas", "hijau", "warna", "merah", "cabai", "warna merah cabai", "8 color", "5 color", "multiwarna", "perak", "krem", "peach", "coklat tua", "peanut", "biru", "ungu", "hitam", "abu", "6 color", "mawar", "4 color", "putih", "warna blush pink", "bening", "netral", "maroon", "kuning", "11 color", "merah", "warna koral", "3 color", "nude", "12 color", "ceri", "2 color", "warna fuchsia", "merah muda", "warna hotpink", "10 color", "merah semangka", "jeruk", "sawo matang", "7 color", "cokelat", "antique white", "product", "texture", "balm", "stick", "liquid", "crayon pensiln", "formula mousse", "cream", "solid", "powder", "solid powder", "cushion", "gel", "skin", "type", "dry", "sensitive", "fade", "combination", "normal", "aging", "age", "signs of aging", "acne", "greasy"]
 
 #fashion
-# Keywords = ["pattern", "paisley", "plaid", "threadwork", "patchwork", "plain", "graphic", "print", "gingham", "camouflage", "polka", "dot", "polka dot", "joint", "wave", "point", "wave point", "stripe", "knot", "floral", "brocade", "cartoon", "letter", "check", "embroidery", "collar", "collar type", "lapel", "hooded", "neck", "high", "high neck", "shawl collar", "o", "o neck", "scoop", "scoop neck", "boat", "boat neck", "off", "shoulder", "off the shoulder", "v", "v neck", "button", "down", "button down", "square", "square neck", "pussy", "pussy bow", "shirt", "shirt collar", "polo", "peter", "pan", "peter pan", "notched", "fashion trend", "trend", "office", "street style", "street", "tropical", "retro vintage", "retro", "vintage", "basic", "preppy heritage", "preppy", "heritage", "party", "sexy", "bohemian", "minimalis", "korean", "clothing material", "clothing", "material", "fleece", "nylon", "velvet", "lace", "chiffon", "denim", "viscose", "polyester", "lycra", "linen", "silk", "poly cotton", "poly", "modal", "net", "wool", "satin", "rayon", "jersey", "cotton", "sleeves", "sleeveless", "sleeve 3 4", "short", "short sleeve", "long", "long sleeve"]
+Keywords = ["pattern", "paisley", "plaid", "threadwork", "patchwork", "plain", "graphic", "print", "gingham", "camouflage", "polka", "dot", "polka dot", "joint", "wave", "point", "wave point", "stripe", "knot", "floral", "brocade", "cartoon", "letter", "check", "embroidery", "collar", "collar type", "lapel", "hooded", "neck", "high", "high neck", "shawl collar", "o", "o neck", "scoop", "scoop neck", "boat", "boat neck", "off", "shoulder", "off the shoulder", "v", "v neck", "button", "down", "button down", "square", "square neck", "pussy", "pussy bow", "shirt", "shirt collar", "polo", "peter", "pan", "peter pan", "notched", "fashion trend", "trend", "office", "street style", "street", "tropical", "retro vintage", "retro", "vintage", "basic", "preppy heritage", "preppy", "heritage", "party", "sexy", "bohemian", "minimalis", "korean", "clothing material", "clothing", "material", "fleece", "nylon", "velvet", "lace", "chiffon", "denim", "viscose", "polyester", "lycra", "linen", "silk", "poly cotton", "poly", "modal", "net", "wool", "satin", "rayon", "jersey", "cotton", "sleeves", "sleeveless", "sleeve 3 4", "short", "short sleeve", "long", "long sleeve"]
 
 
 def get_continuous_chunks(text):
@@ -73,7 +73,10 @@ def to_en(text):
 
 
 def get_num(text):
-    qty = parser.parse(text)
+    try:
+        qty = parser.parse(text)
+    except KeyError:
+        qty = []
     qty = ['/'.join([str(q.value), str(q.unit.name)]) for q in qty]
     return ' '.join(qty) if qty else np.nan
 #end def
@@ -176,7 +179,7 @@ def main():
         df = read(
             f,
             key_word_count=True, lang=False,
-            numbers=False, nouns=False,
+            numbers=True, nouns=True,
             stems=False, quick=quick)
         df.to_csv(f.split('.csv')[0] + '_processed.csv', index=False)
 #end def
