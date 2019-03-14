@@ -301,9 +301,9 @@ def main():
     tf.set_random_seed(A.seed)
 
     quick = False
-    validate = True
+    validate = False
     batch_size = 256
-    epochs = 16
+    epochs = 3
 
     # read in data
     train_df, mapping_dict = read(A.train, A.mapping, quick=quick)
@@ -336,40 +336,43 @@ def main():
         print(y)
         print('='*50)
         title_vec = CountVectorizer(
-            max_features=8192,
-            strip_accents='unicode',
-            stop_words='english',
-            analyzer='word',
-            token_pattern=r'\w{1,}',
-            ngram_range=(1, 4),
-            dtype=np.float32,
-            min_df=5,
-            # max_df=.9).fit(train_df['title'][train_dict['X_' + y + '_train_index']].append(test_df['title']))
-            max_df=.9).fit(train_df['title'][train_dict['X_' + y + '_train_index']].append(val_df['title'][train_dict['X_' + y + '_val_index']]).append(test_df['title']))
-
-        nouns_vec = CountVectorizer(
-            max_features=2048,
-            strip_accents='unicode',
-            stop_words='english',
-            analyzer='word',
-            token_pattern=r'\w{1,}',
-            ngram_range=(1, 3),
-            dtype=np.float32,
-            min_df=5,
-            # max_df=.9).fit(train_df['nouns'][train_dict['X_' + y + '_train_index']].append(test_df['nouns']))
-            max_df=.9).fit(train_df['nouns'][train_dict['X_' + y + '_train_index']].append(val_df['nouns'][train_dict['X_' + y + '_val_index']]).append(test_df['nouns']))
-
-        numbers_vec = CountVectorizer(
-            max_features=256,
+            max_features=20000,
             strip_accents='unicode',
             stop_words='english',
             analyzer='word',
             token_pattern=r'\w{1,}',
             ngram_range=(1, 2),
             dtype=np.float32,
-            min_df=5,
-            # max_df=.9).fit(train_df['numbers'][train_dict['X_' + y + '_train_index']].append(test_df['numbers']))
-            max_df=.9).fit(train_df['numbers'][train_dict['X_' + y + '_train_index']].append(val_df['numbers'][train_dict['X_' + y + '_val_index']]).append(test_df['numbers']))
+            # min_df=5,
+            # max_df=.9
+            ).fit(train_df['title'][train_dict['X_' + y + '_train_index']].append(test_df['title']))
+            # ).fit(train_df['title'][train_dict['X_' + y + '_train_index']].append(val_df['title'][train_dict['X_' + y + '_val_index']]).append(test_df['title']))
+
+        nouns_vec = CountVectorizer(
+            max_features=10000,
+            strip_accents='unicode',
+            stop_words='english',
+            analyzer='word',
+            token_pattern=r'\w{1,}',
+            ngram_range=(1, 2),
+            dtype=np.float32,
+            # min_df=5,
+            # max_df=.9
+            ).fit(train_df['nouns'][train_dict['X_' + y + '_train_index']].append(test_df['nouns']))
+            # ).fit(train_df['nouns'][train_dict['X_' + y + '_train_index']].append(val_df['nouns'][train_dict['X_' + y + '_val_index']]).append(test_df['nouns']))
+
+        numbers_vec = CountVectorizer(
+            max_features=5000,
+            strip_accents='unicode',
+            stop_words='english',
+            analyzer='word',
+            token_pattern=r'\w{1,}',
+            ngram_range=(1, 1),
+            dtype=np.float32,
+            # min_df=5,
+            # max_df=.9
+            ).fit(train_df['numbers'][train_dict['X_' + y + '_train_index']].append(test_df['numbers']))
+            # ).fit(train_df['numbers'][train_dict['X_' + y + '_train_index']].append(val_df['numbers'][train_dict['X_' + y + '_val_index']]).append(test_df['numbers']))
 
         train_dict['X_title_train'] = title_vec.transform(train_df['title'][train_dict['X_' + y + '_train_index']]).toarray()
         train_dict['X_nouns_train'] = nouns_vec.transform(train_df['nouns'][train_dict['X_' + y + '_train_index']]).toarray()

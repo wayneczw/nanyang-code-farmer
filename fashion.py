@@ -413,7 +413,7 @@ def main():
         print('='*50)
 
         title_vec = CountVectorizer(
-            max_features=8192,
+            max_features=20000,
             strip_accents='unicode',
             stop_words='english',
             analyzer='word',
@@ -425,7 +425,7 @@ def main():
             max_df=.9).fit(train_df['title'][train_dict['X_' + y + '_train_index']].append(val_df['title'][train_dict['X_' + y + '_val_index']]).append(test_df['title']))
 
         translated_vec = CountVectorizer(
-            max_features=4096,
+            max_features=10000,
             strip_accents='unicode',
             stop_words='english',
             analyzer='word',
@@ -437,7 +437,7 @@ def main():
             max_df=.9).fit(train_df['translated'][train_dict['X_' + y + '_train_index']].append(val_df['translated'][train_dict['X_' + y + '_val_index']]).append(test_df['translated']))
 
         ocr_vec = CountVectorizer(
-            max_features=2048,
+            max_features=10000,
             strip_accents='unicode',
             stop_words='english',
             analyzer='word',
@@ -449,7 +449,7 @@ def main():
             max_df=.9).fit(train_df['ocr'][train_dict['X_' + y + '_train_index']].append(val_df['ocr'][train_dict['X_' + y + '_val_index']]).append(test_df['ocr']))
 
         nouns_vec = CountVectorizer(
-            max_features=2048,
+            max_features=10000,
             strip_accents='unicode',
             stop_words='english',
             analyzer='word',
@@ -461,7 +461,7 @@ def main():
             max_df=.9).fit(train_df['nouns'][train_dict['X_' + y + '_train_index']].append(val_df['nouns'][train_dict['X_' + y + '_val_index']]).append(test_df['nouns']))
 
         numbers_vec = CountVectorizer(
-            max_features=256,
+            max_features=1000,
             strip_accents='unicode',
             stop_words='english',
             analyzer='word',
