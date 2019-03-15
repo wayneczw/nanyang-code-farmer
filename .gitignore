@@ -1,6 +1,6 @@
 img/
 weights/
-data/
+# data/
 beauty_image/
 mobile_image/
 fashion_image/
