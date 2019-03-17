@@ -217,7 +217,7 @@ def main():
     A = argParse()
 
     df = pd.read_csv(A.file)
-    df = df[:20]
+    # df = df[:20]
     translation_mapping = read_json(A.translation_mapping)
     attribute_mapping = read_json(A.attribute_mapping)
 
