@@ -76,6 +76,8 @@ def read(df_path, mapping_path=None, quick=False):
     #end if
 
     df[categorical_features] = df[categorical_features].fillna('unk')
+    df['translated'] = df.apply(lambda x: x['title'] if x['translated'] is np.nan else x['translated'], axis=1)
+    df['ocr'] = df['ocr'].fillna('')
 
     logger.info("Done reading in {} data....".format(df.shape[0]))
 
@@ -301,7 +303,7 @@ def predict_iter(
 
 def test(
     model,
-    X_title_test, X_translated_test, X_ocr_test, X_nouns_test, X_numbers_test, X_cont_test，
+    X_title_test, X_translated_test, X_ocr_test, X_nouns_test, X_numbers_test, X_cont_test,
     lb, mapping,
     batch_size=128, **kwargs):
 
@@ -335,7 +337,6 @@ def test(
 
     return [first_pred[i] + ' ' + second_pred[i] for i in range(len(proba))]
 #end def
-
 
 
 def main():
@@ -411,9 +412,10 @@ def main():
             token_pattern=r'\w{1,}',
             ngram_range=(1, 2),
             dtype=np.float32,
-            min_df=5,
-            # max_df=.9).fit(train_df['translated'][train_dict['X_' + y + '_train_index']].append(test_df['translated']))
-            max_df=.9).fit(train_df['translated'][train_dict['X_' + y + '_train_index']].append(val_df['translated'][train_dict['X_' + y + '_val_index']]).append(test_df['translated']))
+            # min_df=5,
+            # max_df=.9
+            # ).fit(train_df['translated'][train_dict['X_' + y + '_train_index']].append(test_df['translated']))
+            ).fit(train_df['translated'][train_dict['X_' + y + '_train_index']].append(val_df['translated'][train_dict['X_' + y + '_val_index']]).append(test_df['translated']))
 
         ocr_vec = CountVectorizer(
             max_features=10000,
@@ -423,9 +425,10 @@ def main():
             token_pattern=r'\w{1,}',
             ngram_range=(3, 5),
             dtype=np.float32,
-            min_df=5,
-            # max_df=.9).fit(train_df['ocr'][train_dict['X_' + y + '_train_index']].append(test_df['ocr']))
-            max_df=.9).fit(train_df['ocr'][train_dict['X_' + y + '_train_index']].append(val_df['ocr'][train_dict['X_' + y + '_val_index']]).append(test_df['ocr']))
+            # min_df=5,
+            # max_df=.9
+            # ).fit(train_df['ocr'][train_dict['X_' + y + '_train_index']].append(test_df['ocr']))
+            ).fit(train_df['ocr'][train_dict['X_' + y + '_train_index']].append(val_df['ocr'][train_dict['X_' + y + '_val_index']]).append(test_df['ocr']))
 
         nouns_vec = CountVectorizer(
             max_features=10000,
