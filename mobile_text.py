@@ -266,7 +266,7 @@ def train(
     X_title_val=None, X_translated_val=None, X_ocr_val=None,  X_nouns_val=None, X_numbers_val=None, X_cont_val=None,
     y_val=None,
     X_brand_val=None, X_model_val=None,
-    weights_path='./weights/', weights_prefix='',
+    weights_path='.\\weights\\', weights_prefix='',
     class_weight=None, batch_size=128, epochs=32, **kwargs):
 
     tf_session = tf.Session()
@@ -626,7 +626,7 @@ def main():
         test_df[y] = test(**test_dict)
     #end for
 
-    test_df.to_csv('./data/mobile_test_proba.csv', index=False)
+    test_df.to_csv('.\\data\\mobile_test_proba.csv', index=False)
 #end def
 
 
