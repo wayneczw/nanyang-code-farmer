@@ -223,6 +223,7 @@ def predict(cleaned_col, attribute_mapping, branddict, modeldict, df, predicting
 def add_nn_output(prediction, nn_output):
 
     def internal_add_nn_output(pred, nn_pred):
+        # print(pred, nn_pred)
         nn_pred = list(map(int, nn_pred.split()))
         if len(pred) == 0:
             pred = nn_pred
@@ -231,7 +232,19 @@ def add_nn_output(prediction, nn_output):
                 if p not in pred:
                     pred.append(p)
                     break
+        else:
+            new_pred = []
+            for p in nn_pred:
+                if p in pred:
+                    new_pred.append(p)
+            while len(new_pred) < 2:
+                for p in nn_pred:
+                    if p not in pred:
+                        new_pred.append(p)
 
+            pred = new_pred
+        if len(pred) == 1:
+            pred.append(pred[0])
         return pred
 
     print("Adding output from NN model ... ")
@@ -239,11 +252,11 @@ def add_nn_output(prediction, nn_output):
     with tqdm(total=total_row) as pbar:
         for i in range(total_row):
             for attr, pred in prediction.items():
-                if len(pred[i]) < 2:
-                    prediction[attr][i] = internal_add_nn_output(pred[i], nn_output.ix[i, attr])
-
+                prediction[attr][i] = internal_add_nn_output(pred[i], nn_output.ix[i, attr])
+                # print('final:', prediction[attr][i])
                 # there should be exactly two predictions
                 assert len(prediction[attr][i]) == 2
+
             pbar.update(1)
     return prediction
 
