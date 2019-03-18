@@ -130,6 +130,8 @@ def build_model(
     cont = Dense(min(128, output_shape*2))(cont)
     cont = Dropout(dropout_rate)(cont)
 
+    inputs = [title_input, translated_input, ocr_input, nouns_input, numbers_input, cont_input]
+
     x = concatenate([title, translated, ocr, nouns, numbers, cont])
     x = Dense(min(1024, output_shape*4))(x)
     x = Dropout(dropout_rate)(x)
@@ -138,7 +140,7 @@ def build_model(
 
     output = Dense(output_shape, activation='softmax', name='output')(x)
 
-    model = Model(inputs=[title_input, translated_input, ocr_input, nouns_input, numbers_input, cont_input], outputs=[output])
+    model = Model(inputs=inputs, outputs=[output])
 
     model.compile(optimizer=optimizers.Adam(0.0005, decay=1e-6),
                   loss='categorical_crossentropy',
