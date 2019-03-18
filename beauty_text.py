@@ -330,6 +330,12 @@ def test(
 
     proba = model.predict_generator(generator=test_batches, steps=test_steps)
 
+    # largest = [max(p) for p in proba]
+    # second_largest = [_second_largest(p) for p in proba]
+
+    # first_pred = [str(mapping[lb.classes_[j]]) for i, p in enumerate(proba) for j, _p in enumerate(p) if _p == largest[i]]
+    # second_pred = [str(mapping[lb.classes_[j]]) for i, p in enumerate(proba) for j, _p in enumerate(p) if _p == second_largest[i]]
+
     largest = [max(p) for p in proba]
     second_largest = [_second_largest(p) for p in proba]
 
