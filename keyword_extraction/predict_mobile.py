@@ -207,7 +207,7 @@ def predict(cleaned_col, attribute_mapping, branddict, modeldict, df, predicting
     other_predictions['Phone Screen Size'] = predicted_screen_size
 
     # 6. post processing using phone model and brand
-    other_predictions = post_process(predicted_brand, predicted_model, other_predictions, branddict, modeldict)
+    # other_predictions = post_process(predicted_brand, predicted_model, other_predictions, branddict, modeldict)
 
     prediction = other_predictions
     prediction['Brand'] = predicted_brand
@@ -231,8 +231,7 @@ def add_nn_output(prediction, nn_output):
                 if p not in pred:
                     pred.append(p)
                     break
-            if len(pred) == 1:
-                pred.append(pred[0])
+
         return pred
 
     print("Adding output from NN model ... ")
@@ -242,8 +241,7 @@ def add_nn_output(prediction, nn_output):
             for attr, pred in prediction.items():
                 if len(pred[i]) < 2:
                     prediction[attr][i] = internal_add_nn_output(pred[i], nn_output.ix[i, attr])
-                elif len(pred[i]) > 2:
-                    prediction[attr][i] = pred[i][:2]
+
                 # there should be exactly two predictions
                 assert len(prediction[attr][i]) == 2
             pbar.update(1)
@@ -296,14 +294,15 @@ def cross_reference(attr, attr_name, model, modeldict, round2=False):
             except IndexError:
                 pass
 
-        elif len(attr) == 1:
-            try:
-                if attr[0] == int(float(most_likely_two[0][0])):
-                    attr.append(int(float(most_likely_two[1][0])))
-                else:
-                    attr.append(int(float(most_likely_two[0][0])))
-            except IndexError:
-                pass
+        # # Leave it to the model
+        # elif len(attr) == 1:
+        #     try:
+        #         if attr[0] == int(float(most_likely_two[0][0])):
+        #             attr.append(int(float(most_likely_two[1][0])))
+        #         else:
+        #             attr.append(int(float(most_likely_two[0][0])))
+        #     except IndexError:
+        #         pass
 
         elif len(attr) > 1 and round2 is False:
             updated_attr = []
@@ -312,11 +311,12 @@ def cross_reference(attr, attr_name, model, modeldict, round2=False):
                     updated_attr.append(int(float(most_likely_two[i][0])))
                     attr.remove(int(float(most_likely_two[i][0])))
 
-            while len(updated_attr) < 2 and len(attr) > 0:
-                # randomly select one from the brand and add in hahahahaha
-                chosen = random.choice(attr)
-                updated_attr.append(int(float(chosen)))
-                attr.remove(int(float(chosen)))
+            # Leave it to the model
+            # while len(updated_attr) < 2 and len(attr) > 0:
+            #     # randomly select one from the brand and add in 
+            #     chosen = random.choice(attr)
+            #     updated_attr.append(int(float(chosen)))
+            #     attr.remove(int(float(chosen)))
 
             attr = updated_attr
 
@@ -365,6 +365,18 @@ def main():
         assert len(new_key) == 2
         clean_screen_size[' '.join(new_key)] = v
     attribute_mapping['Phone Screen Size'] = clean_screen_size
+
+    # (3) process Warranty Period
+    warranty_period = attribute_mapping['Warranty Period']
+    clean_warranty_period = dict()
+    for k, v in warranty_period.items():
+        if k.endswith('s'):
+            new_key = k[:-1]
+        else:
+            new_key = k
+        clean_warranty_period[new_key] = v
+    attribute_mapping['Warranty Period'] = clean_warranty_period
+    print(attribute_mapping['Warranty Period'])
 
     ## 2. concate and clean title
     concat_col = concat_title_translate(df)

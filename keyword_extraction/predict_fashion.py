@@ -118,9 +118,16 @@ def add_nn_output(prediction, nn_output):
                 if p not in pred:
                     pred.append(p)
                     break
-
-            if len(pred) == 1:
-                pred.append(pred[0])
+        else:
+            new_pred = []
+            for p in nn_pred:
+                if p in pred:
+                    new_pred.append(p)
+            if len(new_pred) < 2:
+                for p in nn_pred:
+                    if p not in pred:
+                        new_pred.append(p)
+                        break
         return pred
 
     print("Adding output from NN model ... ")
@@ -128,11 +135,7 @@ def add_nn_output(prediction, nn_output):
     with tqdm(total=total_row) as pbar:
         for i in range(total_row):
             for attr, pred in prediction.items():
-
-                if len(pred[i]) < 2:
-                    prediction[attr][i] = internal_add_nn_output(pred[i], nn_output.ix[i, attr])
-                elif len(pred[i]) > 2:
-                    prediction[attr][i] = pred[i][:2]
+                prediction[attr][i] = internal_add_nn_output(pred[i], nn_output.ix[i, attr])
 
                 # there should be exactly two predictions
                 assert len(prediction[attr][i]) == 2
