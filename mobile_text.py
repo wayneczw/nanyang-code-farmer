@@ -155,22 +155,22 @@ def build_model(
 
     if brand_input_shape is not None and model_input_shape is not None:
         x = concatenate([title, nouns, numbers, brand, model])
-        x = Dense(min(1024, output_shape*4))(x)
-        x = Dropout(dropout_rate)(x)
-        x = Dense(min(512, output_shape*2))(x)
-        x = Dropout(dropout_rate)(x)
+        # x = Dense(min(1024, output_shape*4))(x)
+        # x = Dropout(dropout_rate)(x)
+        # x = Dense(min(512, output_shape*2))(x)
+        # x = Dropout(dropout_rate)(x)
     elif brand_input_shape is not None:
         x = concatenate([title, nouns, numbers, brand])
-        x = Dense(min(1024, output_shape*4))(x)
-        x = Dropout(dropout_rate)(x)
-        x = Dense(min(512, output_shape*2))(x)
-        x = Dropout(dropout_rate)(x)
+        # x = Dense(min(1024, output_shape*4))(x)
+        # x = Dropout(dropout_rate)(x)
+        # x = Dense(min(512, output_shape*2))(x)
+        # x = Dropout(dropout_rate)(x)
     else:
         x = concatenate([title, nouns, numbers])
-        x = Dense(min(1024, output_shape*4))(x)
-        x = Dropout(dropout_rate)(x)
-        x = Dense(min(512, output_shape*2))(x)
-        x = Dropout(dropout_rate)(x)
+        # x = Dense(min(1024, output_shape*4))(x)
+        # x = Dropout(dropout_rate)(x)
+        # x = Dense(min(512, output_shape*2))(x)
+        # x = Dropout(dropout_rate)(x)
 
     output = Dense(output_shape, activation='softmax', name='output')(x)
 

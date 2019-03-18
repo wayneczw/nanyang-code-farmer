@@ -135,10 +135,10 @@ def build_model(
     inputs = [title_input, translated_input, ocr_input, nouns_input, numbers_input, cont_input]
 
     x = concatenate([title, translated, ocr, nouns, numbers, cont])
-    x = Dense(min(1024, output_shape*4))(x)
-    x = Dropout(dropout_rate)(x)
-    x = Dense(min(512, output_shape*2))(x)
-    x = Dropout(dropout_rate)(x)
+    # x = Dense(min(1024, output_shape*4))(x)
+    # x = Dropout(dropout_rate)(x)
+    # x = Dense(min(512, output_shape*2))(x)
+    # x = Dropout(dropout_rate)(x)
 
     output = Dense(output_shape, activation='softmax', name='output')(x)
 

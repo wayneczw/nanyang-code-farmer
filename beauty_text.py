@@ -136,10 +136,10 @@ def build_model(
     inputs = [title_input, translated_input, ocr_input, nouns_input, numbers_input, cont_input]
 
     x = concatenate([title, translated, ocr, nouns, numbers, cont])
-    x = Dense(min(1024, output_shape*4))(x)
-    x = Dropout(dropout_rate)(x)
-    x = Dense(min(512, output_shape*2))(x)
-    x = Dropout(dropout_rate)(x)
+    # x = Dense(min(1024, output_shape*4))(x)
+    # x = Dropout(dropout_rate)(x)
+    # x = Dense(min(512, output_shape*2))(x)
+    # x = Dropout(dropout_rate)(x)
 
     output = Dense(output_shape, activation='softmax', name='output')(x)
 
@@ -329,12 +329,6 @@ def test(
         batch_size=batch_size, **kwargs)
 
     proba = model.predict_generator(generator=test_batches, steps=test_steps)
-
-    # largest = [max(p) for p in proba]
-    # second_largest = [_second_largest(p) for p in proba]
-
-    # first_pred = [str(mapping[lb.classes_[j]]) for i, p in enumerate(proba) for j, _p in enumerate(p) if _p == largest[i]]
-    # second_pred = [str(mapping[lb.classes_[j]]) for i, p in enumerate(proba) for j, _p in enumerate(p) if _p == second_largest[i]]
 
     largest = [max(p) for p in proba]
     second_largest = [_second_largest(p) for p in proba]
@@ -536,7 +530,7 @@ def main():
         test_df[y] = test(**test_dict)
     #end for
 
-    test_df.to_csv('./data/beauty_test_proba.csv', index=False)
+    test_df.to_csv('./data/retrained_beauty_test_proba.csv', index=False)
 #end def
 
 
