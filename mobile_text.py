@@ -456,9 +456,9 @@ def main():
     tf.set_random_seed(A.seed)
 
     quick = False
-    validate = False
+    validate = True
     batch_size = 256
-    epochs = 3
+    epochs = 16
 
     # read in data
     train_df, mapping_dict = read(A.train, A.mapping, quick=quick)
