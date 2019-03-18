@@ -400,7 +400,7 @@ def predict_iter(
 
 def test(
     model,
-    X_title_test, X_translated_test, X_ocr_test, X_nouns_test, X_numbers_test, X_cont_test，
+    X_title_test, X_translated_test, X_ocr_test, X_nouns_test, X_numbers_test, X_cont_test,
     lb, mapping,
     X_brand_test=None, X_model_test=None,
     batch_size=128, **kwargs):
