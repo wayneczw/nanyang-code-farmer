@@ -98,37 +98,53 @@ def build_model(
     title_input = Input(title_input_shape, name='title_input')
     title = Dense(2048)(title_input)
     title = Dropout(dropout_rate)(title)
-    title = Dense(512)(title)
+    title = Dense(min(1024, output_shape*4))(title)
     title = Dropout(dropout_rate)(title)
 
     nouns_input = Input(nouns_input_shape, name='nouns_input')
-    nouns = Dense(256)(nouns_input)
+    nouns = Dense(1024)(nouns_input)
+    nouns = Dropout(dropout_rate)(nouns)
+    nouns = Dense(min(256, output_shape*2))(nouns)
     nouns = Dropout(dropout_rate)(nouns)
 
     numbers_input = Input(numbers_input_shape, name='numbers_input')
-    numbers = Dense(256)(numbers_input)
+    numbers = Dense(512)(numbers_input)
+    numbers = Dropout(dropout_rate)(numbers)
+    numbers = Dense(min(256, output_shape*2))(numbers)
     numbers = Dropout(dropout_rate)(numbers)
 
     inputs = [title_input, nouns_input, numbers_input]
 
     if brand_input_shape is not None:
         brand_input = Input(brand_input_shape, name='brand_input')
-        brand = Dense(128)(brand_input)
+        brand = Dense(16)(brand_input)
         brand = Dropout(dropout_rate)(brand)
         inputs.append(brand_input)
 
     if model_input_shape is not None:
         model_input = Input(model_input_shape, name='model_input')
-        model = Dense(128)(model_input)
+        model = Dense(16)(model_input)
         model = Dropout(dropout_rate)(model)
         inputs.append(model_input)
 
     if brand_input_shape is not None and model_input_shape is not None:
         x = concatenate([title, nouns, numbers, brand, model])
+        x = Dense(min(1024, output_shape*4))(x)
+        x = Dropout(dropout_rate)(x)
+        x = Dense(min(512, output_shape*2))(x)
+        x = Dropout(dropout_rate)(x)
     elif brand_input_shape is not None:
         x = concatenate([title, nouns, numbers, brand])
+        x = Dense(min(1024, output_shape*4))(x)
+        x = Dropout(dropout_rate)(x)
+        x = Dense(min(512, output_shape*2))(x)
+        x = Dropout(dropout_rate)(x)
     else:
-        x = concatenate([title, nouns, numbers])
+        x = concatenate([title_input, nouns_input, numbers_input])
+        x = Dense(min(1024, output_shape*4))(x)
+        x = Dropout(dropout_rate)(x)
+        x = Dense(min(512, output_shape*2))(x)
+        x = Dropout(dropout_rate)(x)
 
     output = Dense(output_shape, activation='softmax', name='output')(x)
 
@@ -232,7 +248,7 @@ def train(
     # define early stopping callback
     callbacks_list = []
     if y_val is not None:
-        early_stopping = dict(monitor='val_acc', patience=2, min_delta=0.0001, verbose=1)
+        early_stopping = dict(monitor='val_acc', patience=1, min_delta=0.0001, verbose=1)
         model_checkpoint = dict(filepath=weights_path + weights_prefix + '_{val_acc:.5f}_{acc:.5f}_{epoch:04d}.weights.h5',
                                 save_best_only=True,
                                 save_weights_only=True,
@@ -240,7 +256,7 @@ def train(
                                 period=1,
                                 verbose=1)
     else:
-        early_stopping = dict(monitor='acc', patience=2, min_delta=0.001, verbose=1)
+        early_stopping = dict(monitor='acc', patience=1, min_delta=0.001, verbose=1)
         model_checkpoint = dict(filepath=weights_path + weights_prefix + '_{acc:.5f}_{epoch:04d}.weights.h5',
                                 save_best_only=True,
                                 save_weights_only=True,

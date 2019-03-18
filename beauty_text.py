@@ -17,7 +17,7 @@ from keras.layers import Input
 from keras.layers import concatenate
 from keras.models import Model
 
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelBinarizer
 
@@ -92,18 +92,26 @@ def build_model(
     title_input = Input(title_input_shape, name='title_input')
     title = Dense(2048)(title_input)
     title = Dropout(dropout_rate)(title)
-    title = Dense(512)(title)
+    title = Dense(min(1024, output_shape*4))(title)
     title = Dropout(dropout_rate)(title)
 
     nouns_input = Input(nouns_input_shape, name='nouns_input')
-    nouns = Dense(256)(nouns_input)
+    nouns = Dense(1024)(nouns_input)
+    nouns = Dropout(dropout_rate)(nouns)
+    nouns = Dense(min(256, output_shape*2))(nouns)
     nouns = Dropout(dropout_rate)(nouns)
 
     numbers_input = Input(numbers_input_shape, name='numbers_input')
-    numbers = Dense(256)(numbers_input)
+    numbers = Dense(512)(numbers_input)
+    numbers = Dropout(dropout_rate)(numbers)
+    numbers = Dense(min(256, output_shape*2))(numbers)
     numbers = Dropout(dropout_rate)(numbers)
 
-    x = concatenate([title, nouns, numbers])
+    x = concatenate([title_input, nouns_input, numbers_input])
+    x = Dense(min(1024, output_shape*4))(x)
+    x = Dropout(dropout_rate)(x)
+    x = Dense(min(512, output_shape*2))(x)
+    x = Dropout(dropout_rate)(x)
 
     output = Dense(output_shape, activation='softmax', name='output')(x)
 
@@ -178,7 +186,7 @@ def train(
     # define early stopping callback
     callbacks_list = []
     if y_val is not None:
-        early_stopping = dict(monitor='val_acc', patience=2, min_delta=0.0001, verbose=1)
+        early_stopping = dict(monitor='val_acc', patience=1, min_delta=0.0001, verbose=1)
         model_checkpoint = dict(filepath=weights_path + weights_prefix + '_{val_acc:.5f}_{acc:.5f}_{epoch:04d}.weights.h5',
                                 save_best_only=True,
                                 save_weights_only=True,
@@ -186,7 +194,7 @@ def train(
                                 period=1,
                                 verbose=1)
     else:
-        early_stopping = dict(monitor='acc', patience=2, min_delta=0.001, verbose=1)
+        early_stopping = dict(monitor='acc', patience=1, min_delta=0.001, verbose=1)
         model_checkpoint = dict(filepath=weights_path + weights_prefix + '_{acc:.5f}_{epoch:04d}.weights.h5',
                                 save_best_only=True,
                                 save_weights_only=True,
@@ -321,9 +329,9 @@ def main():
     tf.set_random_seed(A.seed)
 
     quick = False
-    validate = False
+    validate = True
     batch_size = 256
-    epochs = 3
+    epochs = 16
 
     # read in data
     train_df, mapping_dict = read(A.train, A.mapping, quick=quick)
@@ -391,7 +399,7 @@ def main():
             stop_words='english',
             analyzer='word',
             token_pattern=r'\w{1,}',
-            ngram_range=(1, 2),
+            ngram_range=(1, 1),
             dtype=np.float32,
             # min_df=5,
             # max_df=.9
