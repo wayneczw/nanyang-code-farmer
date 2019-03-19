@@ -321,9 +321,9 @@ def predict_iter(
             # X_cont_batch = [x for x in X_cont[start_index:end_index]]
             yield ({
                 'title_input': np.asarray(X_title_batch),
-                'translated_input': np.asarray(X_translated_batch),
+                # 'translated_input': np.asarray(X_translated_batch),
                 # 'ocr_input': np.asarray(X_ocr_batch),
-                # 'nouns_input': np.asarray(X_nouns_batch),
+                'nouns_input': np.asarray(X_nouns_batch),
                 'numbers_input': np.asarray(X_numbers_batch),
                 # 'cont_input': np.asarray(X_cont_batch),
                 })
