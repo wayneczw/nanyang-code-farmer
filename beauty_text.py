@@ -219,7 +219,7 @@ def train(
     X_numbers_val=None,
     # X_cont_val=None,
     y_val=None,
-    weights_path='./weights/', weights_prefix='',
+    weights_path='.\\weights\\', weights_prefix='',
     class_weight=None, batch_size=128, epochs=32, **kwargs):
 
     tf_session = tf.Session()
@@ -468,7 +468,7 @@ def main():
             # min_df=5,
             # max_df=.9
             # ).fit(train_df['title'][train_dict['X_' + y + '_train_index']].append(test_df['title']))
-            ).fit(train_df['title'][train_dict['X_' + y + '_train_index']].append(val_df['title'][train_dict['X_' + y + '_val_index']]).append(test_df['title']))
+            ).fit(train_df['stemmed_title'][train_dict['X_' + y + '_train_index']].append(val_df['stemmed_title'][train_dict['X_' + y + '_val_index']]).append(test_df['stemmed_title']))
 
         # translated_vec = CountVectorizer(
         #     max_features=10000,
@@ -522,7 +522,7 @@ def main():
             # ).fit(train_df['numbers'][train_dict['X_' + y + '_train_index']].append(test_df['numbers']))
             ).fit(train_df['numbers'][train_dict['X_' + y + '_train_index']].append(val_df['numbers'][train_dict['X_' + y + '_val_index']]).append(test_df['numbers']))
 
-        train_dict['X_title_train'] = title_vec.transform(train_df['title'][train_dict['X_' + y + '_train_index']]).toarray()
+        train_dict['X_title_train'] = title_vec.transform(train_df['stemmed_title'][train_dict['X_' + y + '_train_index']]).toarray()
         # train_dict['X_translated_train'] = translated_vec.transform(train_df['translated'][train_dict['X_' + y + '_train_index']]).toarray()
         # train_dict['X_ocr_train'] = ocr_vec.transform(train_df['ocr'][train_dict['X_' + y + '_train_index']]).toarray()
         train_dict['X_nouns_train'] = nouns_vec.transform(train_df['nouns'][train_dict['X_' + y + '_train_index']]).toarray()
@@ -530,7 +530,7 @@ def main():
         # train_dict['X_cont_train'] = train_df[continuous_features].values[train_dict['X_' + y + '_train_index']]
 
         if validate:
-            train_dict['X_title_val'] = title_vec.transform(val_df['title'][train_dict['X_' + y + '_val_index']]).toarray()
+            train_dict['X_title_val'] = title_vec.transform(val_df['stemmed_title'][train_dict['X_' + y + '_val_index']]).toarray()
             # train_dict['X_translated_val'] = translated_vec.transform(val_df['translated'][train_dict['X_' + y + '_val_index']]).toarray()
             # train_dict['X_ocr_val'] = ocr_vec.transform(val_df['ocr'][train_dict['X_' + y + '_val_index']]).toarray()
             train_dict['X_nouns_val'] = nouns_vec.transform(val_df['nouns'][train_dict['X_' + y + '_val_index']]).toarray()
@@ -562,7 +562,7 @@ def main():
         test_dict['model'] = model
         test_dict['lb'] = lb_dict[y]
         test_dict['mapping'] = mapping_dict[y]
-        test_dict['X_title_test'] = title_vec.transform(test_df['title'].values).toarray()
+        test_dict['X_title_test'] = title_vec.transform(test_df['stemmed_title'].values).toarray()
         # test_dict['X_translated_test'] = translated_vec.transform(test_df['translated'].values).toarray()
         # test_dict['X_ocr_test'] = ocr_vec.transform(test_df['ocr'].values).toarray()
         test_dict['X_nouns_test'] = nouns_vec.transform(test_df['nouns'].values).toarray()
@@ -572,7 +572,7 @@ def main():
         test_df[y] = test(**test_dict)
     #end for
 
-    test_df.to_csv('./data/retrained_again_beauty_test_proba.csv', index=False)
+    test_df.to_csv('.\\data\\stemmed_beauty_test_proba.csv', index=False)
 #end def
 
 

@@ -180,8 +180,8 @@ def main():
             f,
             key_word_count=True, lang=False,
             numbers=True, nouns=True,
-            stems=False, quick=quick)
-        df.to_csv(f.split('.csv')[0] + '_processed.csv', index=False)
+            stems=True, quick=quick)
+        df.to_csv(f.split('.csv')[0] + '_stemmed.csv', index=False)
 #end def
 
 if __name__ == '__main__': main()
