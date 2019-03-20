@@ -97,9 +97,12 @@ def build_model(
     activity_regularizer=0, bias_regularizer=0):
     
     title_input = Input(title_input_shape, name='title_input')
+    title = Dense(4096)(title_input)
+    title = Dropout(dropout_rate)(title)
     title = Dense(2048)(title_input)
     title = Dropout(dropout_rate)(title)
-    title = Dense(min(1024, output_shape*4))(title)
+    # title = Dense(min(1024, output_shape*4))(title)
+    title = Dense(512)(title)
     title = Dropout(dropout_rate)(title)
 
     # translated_input = Input(translated_input_shape, name='translated_input')
@@ -115,16 +118,16 @@ def build_model(
     # ocr = Dropout(dropout_rate)(ocr)
 
     nouns_input = Input(nouns_input_shape, name='nouns_input')
-    nouns = Dense(512)(nouns_input)
+    nouns = Dense(256)(nouns_input)
     nouns = Dropout(dropout_rate)(nouns)
-    nouns = Dense(min(256, output_shape*2))(nouns)
-    nouns = Dropout(dropout_rate)(nouns)
+    # nouns = Dense(min(256, output_shape*2))(nouns)
+    # nouns = Dropout(dropout_rate)(nouns)
 
     numbers_input = Input(numbers_input_shape, name='numbers_input')
-    numbers = Dense(512)(numbers_input)
+    numbers = Dense(256)(numbers_input)
     numbers = Dropout(dropout_rate)(numbers)
-    numbers = Dense(min(256, output_shape*2))(numbers)
-    numbers = Dropout(dropout_rate)(numbers)
+    # numbers = Dense(min(256, output_shape*2))(numbers)
+    # numbers = Dropout(dropout_rate)(numbers)
 
     # cont_input = Input(cont_input_shape, name='cont_input')
     # cont = Dense(256)(cont_input)
@@ -546,7 +549,7 @@ def main():
 
     # test_df.to_csv('./data/fashion_test_proba.csv', index=False)
 
-    test_df.to_csv('.\\data\\fashion_test_proba.csv', index=False)
+    test_df.to_csv('./data/retrained_fashion_test_proba.csv', index=False)
 #end def
 
 
