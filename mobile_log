@@ -1,145 +1,108 @@
 ⇒  python -m mobile_text -i processed_data/combined/mobile_train_processed_combined_processed.csv -t processed_data/combined/mobile_val_processed_combined_processed.csv -m data/mobile_profile_train.json
 Using TensorFlow backend.
-2019-03-14 20:14:29,409 [__main__-77131] INFO: Reading in data from processed_data/combined/mobile_train_processed_combined_processed.csv....
-2019-03-14 20:14:32,942 [__main__-77131] INFO: Done reading in 160330 data....
-2019-03-14 20:14:32,942 [__main__-77131] INFO: Reading in data from processed_data/combined/mobile_val_processed_combined_processed.csv....
-2019-03-14 20:14:33,464 [__main__-77131] INFO: Done reading in 40417 data....
-2019-03-14 20:14:33,919 [__main__-77131] INFO: Encoding labels....
-2019-03-14 20:14:37,426 [__main__-77131] INFO: Done encoding labels....
+2019-03-21 15:22:21,212 [__main__-4894] INFO: Reading in data from processed_data/combined/mobile_train_processed_combined_processed.csv....
+2019-03-21 15:22:24,455 [__main__-4894] INFO: Done reading in 160330 data....
+2019-03-21 15:22:24,455 [__main__-4894] INFO: Reading in data from processed_data/combined/mobile_val_processed_combined_processed.csv....
+2019-03-21 15:22:24,949 [__main__-4894] INFO: Done reading in 40417 data....
+2019-03-21 15:22:24,949 [__main__-4894] INFO: Encoding labels....
+2019-03-21 15:22:28,477 [__main__-4894] INFO: Done encoding labels....
 ==================================================
 Brand
 ==================================================
-2019-03-14 20:14:57.533569: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
-Epoch 1/16
-546/546 [==============================] - 394s 722ms/step - loss: 0.1719 - acc: 0.9690 - val_loss: 0.0535 - val_acc: 0.9872
-
-Epoch 00001: val_loss improved from inf to 0.05349, saving model to ./weights/Brand_0.05349_0.17220_0001.weights.h5
-Epoch 2/16
-546/546 [==============================] - 396s 725ms/step - loss: 0.0283 - acc: 0.9927 - val_loss: 0.0547 - val_acc: 0.9875
-
-Epoch 00002: val_loss did not improve from 0.05349
-Epoch 00002: early stopping
+2019-03-21 15:22:53.207936: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+Epoch 1/2
+606/606 [==============================] - 488s 805ms/step - loss: 0.1722 - acc: 0.9693
+/Users/wayneczw/ndsc_data/venv/lib/python3.5/site-packages/keras/callbacks.py:434: RuntimeWarning: Can save best model only with val_loss available, skipping.
+  'skipping.' % (self.monitor), RuntimeWarning)
+Epoch 2/2
+606/606 [==============================] - 483s 797ms/step - loss: 0.0272 - acc: 0.9930
 ==================================================
 Phone Model
 ==================================================
-Epoch 1/16
-298/298 [==============================] - 228s 764ms/step - loss: 0.8072 - acc: 0.8868 - val_loss: 0.1291 - val_acc: 0.9741
-
-Epoch 00001: val_loss improved from inf to 0.12914, saving model to ./weights/Phone Model_0.12914_0.80952_0001.weights.h5
-Epoch 2/16
-298/298 [==============================] - 226s 759ms/step - loss: 0.0811 - acc: 0.9836 - val_loss: 0.0995 - val_acc: 0.9771
-
-Epoch 00002: val_loss improved from 0.12914 to 0.09948, saving model to ./weights/Phone Model_0.09948_0.08069_0002.weights.h5
-Epoch 3/16
-298/298 [==============================] - 225s 757ms/step - loss: 0.0410 - acc: 0.9906 - val_loss: 0.1003 - val_acc: 0.9788
-
-Epoch 00003: val_loss did not improve from 0.09948
-Epoch 00003: early stopping
+Epoch 1/2
+331/331 [==============================] - 297s 898ms/step - loss: 0.6352 - acc: 0.9076
+/Users/wayneczw/ndsc_data/venv/lib/python3.5/site-packages/keras/callbacks.py:434: RuntimeWarning: Can save best model only with val_loss available, skipping.
+  'skipping.' % (self.monitor), RuntimeWarning)
+Epoch 2/2
+331/331 [==============================] - 297s 896ms/step - loss: 0.0706 - acc: 0.9852
 ==================================================
 Operating System
 ==================================================
-Epoch 1/16
-160/160 [==============================] - 121s 755ms/step - loss: 0.1927 - acc: 0.9526 - val_loss: 0.0952 - val_acc: 0.9736
-
-Epoch 00001: val_loss improved from inf to 0.09521, saving model to ./weights/Operating System_0.09521_0.19201_0001.weights.h5
-Epoch 2/16
-160/160 [==============================] - 115s 716ms/step - loss: 0.0545 - acc: 0.9844 - val_loss: 0.1070 - val_acc: 0.9756
-
-Epoch 00002: val_loss did not improve from 0.09521
-Epoch 00002: early stopping
+Epoch 1/2
+177/177 [==============================] - 150s 848ms/step - loss: 0.1992 - acc: 0.9513
+/Users/wayneczw/ndsc_data/venv/lib/python3.5/site-packages/keras/callbacks.py:434: RuntimeWarning: Can save best model only with val_loss available, skipping.
+  'skipping.' % (self.monitor), RuntimeWarning)
+Epoch 2/2
+177/177 [==============================] - 148s 835ms/step - loss: 0.0551 - acc: 0.9850
 ==================================================
 Features
 ==================================================
-Epoch 1/16
-139/139 [==============================] - 103s 738ms/step - loss: 0.7804 - acc: 0.7255 - val_loss: 0.6293 - val_acc: 0.7746
-
-Epoch 00001: val_loss improved from inf to 0.62928, saving model to ./weights/Features_0.62928_0.78193_0001.weights.h5
-Epoch 2/16
-139/139 [==============================] - 1617s 12s/step - loss: 0.4543 - acc: 0.8267 - val_loss: 0.6296 - val_acc: 0.7791
-
-Epoch 00002: val_loss did not improve from 0.62928
-Epoch 00002: early stopping
+Epoch 1/2
+154/154 [==============================] - 130s 846ms/step - loss: 0.7988 - acc: 0.7192
+/Users/wayneczw/ndsc_data/venv/lib/python3.5/site-packages/keras/callbacks.py:434: RuntimeWarning: Can save best model only with val_loss available, skipping.
+  'skipping.' % (self.monitor), RuntimeWarning)
+Epoch 2/2
+154/154 [==============================] - 128s 833ms/step - loss: 0.4519 - acc: 0.8297
 ==================================================
 Network Connections
 ==================================================
-Epoch 1/16
-83/83 [==============================] - 64s 774ms/step - loss: 0.3748 - acc: 0.8763 - val_loss: 0.2481 - val_acc: 0.9195
-
-Epoch 00001: val_loss improved from inf to 0.24808, saving model to ./weights/Network Connections_0.24808_0.37524_0001.weights.h5
-Epoch 2/16
-83/83 [==============================] - 61s 733ms/step - loss: 0.1529 - acc: 0.9456 - val_loss: 0.2738 - val_acc: 0.9187
-
-Epoch 00002: val_loss did not improve from 0.24808
-Epoch 00002: early stopping
+Epoch 1/2
+92/92 [==============================] - 79s 854ms/step - loss: 0.4129 - acc: 0.8606
+/Users/wayneczw/ndsc_data/venv/lib/python3.5/site-packages/keras/callbacks.py:434: RuntimeWarning: Can save best model only with val_loss available, skipping.
+  'skipping.' % (self.monitor), RuntimeWarning)
+Epoch 2/2
+92/92 [==============================] - 75s 820ms/step - loss: 0.1679 - acc: 0.9414
 ==================================================
 Memory RAM
 ==================================================
-Epoch 1/16
-201/201 [==============================] - 153s 760ms/step - loss: 0.4463 - acc: 0.8646 - val_loss: 0.3149 - val_acc: 0.8978
-
-Epoch 00001: val_loss improved from inf to 0.31487, saving model to ./weights/Memory RAM_0.31487_0.44644_0001.weights.h5
-Epoch 2/16
-201/201 [==============================] - 149s 742ms/step - loss: 0.1905 - acc: 0.9372 - val_loss: 0.3341 - val_acc: 0.9017
-
-Epoch 00002: val_loss did not improve from 0.31487
-Epoch 00002: early stopping
+Epoch 1/2
+223/223 [==============================] - 178s 799ms/step - loss: 0.4702 - acc: 0.8585
+/Users/wayneczw/ndsc_data/venv/lib/python3.5/site-packages/keras/callbacks.py:434: RuntimeWarning: Can save best model only with val_loss available, skipping.
+  'skipping.' % (self.monitor), RuntimeWarning)
+Epoch 2/2
+223/223 [==============================] - 174s 781ms/step - loss: 0.1927 - acc: 0.9372
 ==================================================
 Warranty Period
 ==================================================
-Epoch 1/16
-170/170 [==============================] - 130s 762ms/step - loss: 0.6375 - acc: 0.8402 - val_loss: 0.5078 - val_acc: 0.8661
-
-Epoch 00001: val_loss improved from inf to 0.50779, saving model to ./weights/Warranty Period_0.50779_0.63756_0001.weights.h5
-Epoch 2/16
-170/170 [==============================] - 126s 740ms/step - loss: 0.3726 - acc: 0.8885 - val_loss: 0.5223 - val_acc: 0.8646
-
-Epoch 00002: val_loss did not improve from 0.50779
-Epoch 00002: early stopping
+Epoch 1/2
+188/188 [==============================] - 150s 799ms/step - loss: 0.6424 - acc: 0.8410
+/Users/wayneczw/ndsc_data/venv/lib/python3.5/site-packages/keras/callbacks.py:434: RuntimeWarning: Can save best model only with val_loss available, skipping.
+  'skipping.' % (self.monitor), RuntimeWarning)
+Epoch 2/2
+188/188 [==============================] - 146s 777ms/step - loss: 0.3684 - acc: 0.8908
 ==================================================
 Storage Capacity
 ==================================================
-Epoch 1/16
-223/223 [==============================] - 169s 758ms/step - loss: 0.2415 - acc: 0.9295 - val_loss: 0.1574 - val_acc: 0.9521
-
-Epoch 00001: val_loss improved from inf to 0.15735, saving model to ./weights/Storage Capacity_0.15735_0.24183_0001.weights.h5
-Epoch 2/16
-223/223 [==============================] - 165s 742ms/step - loss: 0.1036 - acc: 0.9656 - val_loss: 0.1723 - val_acc: 0.9480
-
-Epoch 00002: val_loss did not improve from 0.15735
-Epoch 00002: early stopping
+Epoch 1/2
+247/247 [==============================] - 197s 797ms/step - loss: 0.2513 - acc: 0.9296
+/Users/wayneczw/ndsc_data/venv/lib/python3.5/site-packages/keras/callbacks.py:434: RuntimeWarning: Can save best model only with val_loss available, skipping.
+  'skipping.' % (self.monitor), RuntimeWarning)
+Epoch 2/2
+247/247 [==============================] - 192s 778ms/step - loss: 0.1037 - acc: 0.9656
 ==================================================
 Color Family
 ==================================================
-Epoch 1/16
-298/298 [==============================] - 229s 768ms/step - loss: 0.6628 - acc: 0.8026 - val_loss: 0.5087 - val_acc: 0.8349
-
-Epoch 00001: val_loss improved from inf to 0.50868, saving model to ./weights/Color Family_0.50868_0.66278_0001.weights.h5
-Epoch 2/16
-298/298 [==============================] - 226s 760ms/step - loss: 0.3495 - acc: 0.8790 - val_loss: 0.5322 - val_acc: 0.8379
-
-Epoch 00002: val_loss did not improve from 0.50868
-Epoch 00002: early stopping
+Epoch 1/2
+332/332 [==============================] - 267s 803ms/step - loss: 0.6714 - acc: 0.7987
+/Users/wayneczw/ndsc_data/venv/lib/python3.5/site-packages/keras/callbacks.py:434: RuntimeWarning: Can save best model only with val_loss available, skipping.
+  'skipping.' % (self.monitor), RuntimeWarning)
+Epoch 2/2
+332/332 [==============================] - 263s 791ms/step - loss: 0.3463 - acc: 0.8814
 ==================================================
 Camera
 ==================================================
-Epoch 1/16
-87/87 [==============================] - 70s 801ms/step - loss: 1.2277 - acc: 0.6179 - val_loss: 0.9098 - val_acc: 0.7042
-
-Epoch 00001: val_loss improved from inf to 0.90978, saving model to ./weights/Camera_0.90978_1.22859_0001.weights.h5
-Epoch 2/16
-87/87 [==============================] - 65s 743ms/step - loss: 0.5977 - acc: 0.7995 - val_loss: 0.9677 - val_acc: 0.6966
-
-Epoch 00002: val_loss did not improve from 0.90978
-Epoch 00002: early stopping
+Epoch 1/2
+97/97 [==============================] - 79s 815ms/step - loss: 1.2793 - acc: 0.6083
+/Users/wayneczw/ndsc_data/venv/lib/python3.5/site-packages/keras/callbacks.py:434: RuntimeWarning: Can save best model only with val_loss available, skipping.
+  'skipping.' % (self.monitor), RuntimeWarning)
+Epoch 2/2
+97/97 [==============================] - 75s 774ms/step - loss: 0.6378 - acc: 0.7939
 ==================================================
 Phone Screen Size
 ==================================================
-Epoch 1/16
-115/115 [==============================] - 90s 782ms/step - loss: 0.8620 - acc: 0.7013 - val_loss: 0.6682 - val_acc: 0.7721
-
-Epoch 00001: val_loss improved from inf to 0.66820, saving model to ./weights/Phone Screen Size_0.66820_0.86268_0001.weights.h5
-Epoch 2/16
-115/115 [==============================] - 86s 747ms/step - loss: 0.4347 - acc: 0.8459 - val_loss: 0.6867 - val_acc: 0.7706
-
-Epoch 00002: val_loss did not improve from 0.66820
-Epoch 00002: early stopping
+Epoch 1/2
+128/128 [==============================] - 106s 824ms/step - loss: 0.8933 - acc: 0.6920
+/Users/wayneczw/ndsc_data/venv/lib/python3.5/site-packages/keras/callbacks.py:434: RuntimeWarning: Can save best model only with val_loss available, skipping.
+  'skipping.' % (self.monitor), RuntimeWarning)
+Epoch 2/2
+128/128 [==============================] - 101s 791ms/step - loss: 0.4469 - acc: 0.8452

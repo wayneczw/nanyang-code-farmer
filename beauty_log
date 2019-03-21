@@ -19,11 +19,6 @@ Epoch 2/16
 
 Epoch 00002: val_loss improved from 0.35076 to 0.34876, saving model to ./weights/Benefits_0.87401_0.89409_0002.weights.h5
 Epoch 3/16
-151/400 [==========>...................] - ETA: 3:10 - loss: 0.2274 - acc: 0.9139^Z
-[2]  + 92574 suspended  python -m beauty_text -i  -t  -m data/beauty_profile_train.json
-wayneczw@kokorozashis-MacBook-puro:~/ndsc_data/nanyang-code-farmer|master⚡ 
-⇒  fg
-[2]  - 92574 continued  python -m beauty_text -i  -t  -m data/beauty_profile_train.json
 400/400 [==============================] - 4179s 10s/step - loss: 0.2394 - acc: 0.9087 - val_loss: 0.3621 - val_acc: 0.8698
 
 Epoch 00003: val_loss did not improve from 0.34876
@@ -40,11 +35,6 @@ Epoch 2/16
 
 Epoch 00002: val_loss improved from 0.05949 to 0.05821, saving model to ./weights/Brand_0.98881_0.99405_0002.weights.h5
 Epoch 3/16
-837/838 [============================>.] - ETA: 0s - loss: 0.0166 - acc: 0.9962^Z 
-[2]  + 92574 suspended  python -m beauty_text -i  -t  -m data/beauty_profile_train.json
-wayneczw@kokorozashis-MacBook-puro:~/ndsc_data/nanyang-code-farmer|master⚡ 
-⇒  fg
-[2]  - 92574 continued  python -m beauty_text -i  -t  -m data/beauty_profile_train.json
 838/838 [==============================] - 2708s 3s/step - loss: 0.0165 - acc: 0.9962 - val_loss: 0.0625 - val_acc: 0.9883
 
 Epoch 00003: val_loss did not improve from 0.05821
