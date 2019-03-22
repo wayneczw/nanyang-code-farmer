@@ -238,20 +238,25 @@ def main():
     ## 2. concate and clean title
     concat_col = concat_title_translate(df)
     cleaned_col = cleaning(concat_col, translation_mapping)
+    df['clean_title'] = cleaned_col
 
     ## 3. make prediction
     prediction = predict(cleaned_col, attribute_mapping, df, A.predicting)
 
     ## 4. write prediction to df
+    new_file_name = '../data/fashion_test_keywords.csv'
+    new_keys = []
     for k, v in prediction.items():
-        if A.predicting is True:
-            new_key = k
-            new_file_name = '../data/fashion_test_predicted.csv'
-        else:
-            new_key = "Predicted " + k
-            new_file_name = 'fashion_predicted.csv'
-
+        # if A.predicting is True:
+        #     new_key = k
+        # else:
+        #     new_key = "Keyword " + k
+        new_key = "Keyword " + k
+        new_keys.append(new_key)
         df[new_key] = [' '.join(list(map(str, lst))) for lst in v]
+
+    new_keys += ["itemid", "clean_title", "image_path", "title", "translated"]
+    df = df[new_keys]
 
     df.to_csv(new_file_name, index=False)
 

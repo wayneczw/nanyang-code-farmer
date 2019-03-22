@@ -139,7 +139,7 @@ def find_phone_screen_size(src, screen_size_dict):
     # find floating points number followed by space or fullstop
     res1 = re.findall(r"(\d+\.\d+)[\s\.]", src)
     # find number followed by "inch"
-    res2 = re.findall(r"(\d+\.?\d+?)\s?inch", src)
+    res2 = re.findall(r"(\d+\.?\d+?)\s?in", src)
     res = list(set(map(float, res1 + res2)))
 
     matching_result = []
@@ -148,6 +148,21 @@ def find_phone_screen_size(src, screen_size_dict):
             if r >= k[0] and r <= k[1]:
                 matching_result.append(v)
     return matching_result
+
+
+def predict_phone_screen_size(cleaned_col, attribute_mapping):
+    total_row = len(cleaned_col)
+    screen_size_dict = dict()
+    for k, v in attribute_mapping['Phone Screen Size'].items():
+        lower_range, upper_range = k.split()
+        screen_size_dict[(float(lower_range), float(upper_range))] = int(v)
+    predicted_screen_size = []
+    print("Predicting Phone Screen Size ... ")
+    with tqdm(total=total_row) as pbar:
+        for item in cleaned_col:
+            predicted_screen_size.append(find_phone_screen_size(item, screen_size_dict))
+            pbar.update(1)
+    return predicted_screen_size
 
 
 def predict(cleaned_col, attribute_mapping, branddict, modeldict, df, predicting=False):
@@ -394,21 +409,26 @@ def main():
     ## 2. concate and clean title
     concat_col = concat_title_translate(df)
     cleaned_col = cleaning(concat_col, translation_mapping)
+    df['clean_title'] = cleaned_col
 
     ## 3. make prediction
     prediction = predict(cleaned_col, attribute_mapping, branddict, modeldict, df, A.predicting)
 
     ## 4. write prediction to df
+    new_file_name = '../data/mobile_test_keywords.csv'
+    new_keys = []
     for k, v in prediction.items():
-        if A.predicting is True:
-            new_key = k
-            new_file_name = '../data/mobile_test_predicted.csv'
-        else:
-            new_key = "Predicted " + k
-            new_file_name = 'mobile_predicted.csv'
+        # if A.predicting is True:
+        #     new_key = k
+
+        # else:
+        #     new_key = "Keyword " + k
+        new_key = "Keyword " + k
 
         df[new_key] = [' '.join(list(map(str, lst))) for lst in v]
-
+        new_keys.append(new_key)
+    new_keys += ["itemid", "clean_title", "image_path", "title", "translated"]
+    df = df[new_keys]
     df.to_csv(new_file_name, index=False)
 
 if __name__ == '__main__':
