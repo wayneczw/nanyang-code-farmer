@@ -24,7 +24,7 @@ def argParse():
 
 def internal_combine_with_overwriting(kw_pred, nn_pred):
         pred = []
-        kw_pred = list(map(int, nn_pred.split()))
+        kw_pred = list(map(int, kw_pred.split()))
         nn_pred = list(map(int, nn_pred.split()))
         if len(kw_pred) == 0:
             pred = nn_pred
