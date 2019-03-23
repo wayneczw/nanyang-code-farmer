@@ -538,7 +538,7 @@ def main():
         print(y)
         print('='*50)
         title_vec = CountVectorizer(
-            max_features=30000,
+            max_features=50000,
             strip_accents='unicode',
             stop_words='english',
             analyzer='word',
@@ -577,7 +577,7 @@ def main():
         #     ).fit(train_df['ocr'][train_dict['X_' + y + '_train_index']].append(val_df['ocr'][train_dict['X_' + y + '_val_index']]).append(test_df['ocr']))
 
         nouns_vec = CountVectorizer(
-            max_features=10000,
+            max_features=20000,
             strip_accents='unicode',
             stop_words='english',
             analyzer='word',
@@ -590,12 +590,12 @@ def main():
             # ).fit(train_df['nouns'][train_dict['X_' + y + '_train_index']].append(val_df['nouns'][train_dict['X_' + y + '_val_index']]).append(test_df['nouns']))
 
         numbers_vec = CountVectorizer(
-            max_features=5000,
+            max_features=20000,
             strip_accents='unicode',
             stop_words='english',
             analyzer='word',
             token_pattern=r'\w{1,}',
-            ngram_range=(1, 2),
+            ngram_range=(1, 1),
             dtype=np.float32,
             # min_df=5,
             # max_df=.9
@@ -692,7 +692,7 @@ def main():
         gc.collect()
     #end for
 
-    test_df.to_csv('./data/full_30000_mobile_test_proba.csv', index=False)
+    test_df.to_csv('./data/full_50000_n20000_num20000_mobile_test_proba.csv', index=False)
     # test_df.to_csv('.\\data\\mobile_test_proba.csv', index=False)
 #end def
 
