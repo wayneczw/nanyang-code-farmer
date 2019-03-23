@@ -23,25 +23,27 @@ def argParse():
 
 
 def internal_combine_with_overwriting(kw_pred, nn_pred):
-        pred = []
-        kw_pred = list(map(int, kw_pred.split()))
-        nn_pred = list(map(int, nn_pred.split()))
-        if len(kw_pred) == 0:
-            pred = nn_pred
-        elif len(kw_pred) == 1:
-            pred.append(kw_pred[0])
-            # append the other one from nn_pred (if not duplicate)
-            for p in nn_pred:
-                if p not in pred:
-                    pred.append(p)
-                    break
-        else:
-            pred = kw_pred[:2]
-        return ' '.join(list(map(str, pred)))
+    pred = []
+    kw_pred = list(set(map(int, map(float, kw_pred.split()))))
+    nn_pred = list(map(int, nn_pred.split()))
+    if len(kw_pred) == 0:
+        pred = nn_pred
+    elif len(kw_pred) == 1:
+        pred.append(kw_pred[0])
+        # append the other one from nn_pred (if not duplicate)
+        for p in nn_pred:
+            if p not in pred:
+                pred.append(p)
+                break
+    else:
+        pred = kw_pred[:2]
+    return ' '.join(list(map(str, pred)))
 
 
 def combine_with_overwriting(kw_col, nn_col, attr):
     print("Combine with overwriting " + attr + ' ...')
+    kw_col.fillna('', inplace=True)
+    kw_col = kw_col.astype(str)
     out = []
     with tqdm(total=len(nn_col)) as pbar:
         for i in range(len(nn_col)):
@@ -57,14 +59,14 @@ def resolve_dup_mobile(combine, attributes, majority_count, branddict, modeldict
             temp_brand = combine["Brand"][i].split()[0]      # str
             temp_model = combine["Phone Model"][i].split()[0]        # str
             for attr in attributes:
-                pred_str = combine[attr][i]
+                pred_str = combine.ix[i, attr]
                 pred = list(map(int, pred_str.split()))
                 if len(set(pred)) == 1:
-                    print('duplicate found in attr {} :\n{}'.format(attr, combine.iloc[i]))
+                    print('duplicate found in row {} attr {} :\n{}'.format(i, attr, combine.iloc[i]))
                     model_counter = Counter(modeldict[temp_model][attr])
                     brand_counter = Counter(modeldict[temp_brand][attr])
-                    pred = internal_resolve_dup_mobile(pred, attr, model_counter, brand_counter, majority_count[attr])
-                    combine[attr][i] = ' '.join(list(map(str, pred)))
+                    pred = internal_resolve_dup_mobile([pred[0]], attr, model_counter, brand_counter, Counter(majority_count[attr]))
+                    combine.ix[i, attr] = ' '.join(list(map(str, pred)))
                 assert len(pred) == 2
             pbar.update(1)
 
@@ -73,7 +75,6 @@ def resolve_dup_mobile(combine, attributes, majority_count, branddict, modeldict
 
 def internal_resolve_dup_mobile(pred, attr, model_counter, brand_counter, majority_counter):
     # use phone model first
-    pred = pred[0]
     if len(model_counter) > 0:
         pred = internal_resolve_dup(pred, attr, model_counter)
     if len(pred) == 1 and len(brand_counter) > 0:
@@ -88,12 +89,12 @@ def resolve_dup(combine, attributes, majority_count):
     with tqdm(total=total_row) as pbar:
         for i in range(total_row):
             for attr in attributes:
-                pred_str = combine[attr][i]
+                pred_str = combine.ix[i, attr]
                 pred = list(map(int, pred_str.split()))
                 if len(set(pred)) == 1:
-                    print('duplicate found in attr {} :\n{}'.format(attr, combine.iloc[i]))
+                    print('duplicate found in rwo {} attr {} :\n{}'.format(i, attr, combine.iloc[i]))
                     pred = internal_resolve_dup([pred[0]], attr, Counter(majority_count[attr]))
-                    combine[attr][i] = ' '.join(list(map(str, pred)))
+                    combine.ix[i, attr] = ' '.join(list(map(str, pred)))
                 assert len(pred) == 2
             pbar.update(1)
 
@@ -117,12 +118,11 @@ def main():
     # two df should have the same number of rows
     assert dfp.shape[0] == dfk.shape[0]
 
-    new_df = dfp[['itemid', 'title', 'image_path']].copy()
+    combine = dfp[['itemid', 'title', 'image_path']].copy()
     attribute_mapping = read_json(A.attribute_mapping)
     attributes = list(attribute_mapping.keys())
     attributes_keywords = [('Keyword ' + attr) for attr in attributes]
 
-    combine = dict()
     for attr in attributes:
         if A.overwrite is not None and attr in A.overwrite:
             out = combine_with_overwriting(dfk["Keyword " + attr], dfp[attr], attr)
@@ -130,21 +130,21 @@ def main():
         else:
             combine[attr] = list(dfp[attr])
 
+    dirname, basename = os.path.split(A.keywords)
     # resolve duplicate
     majority_count = read_json(A.majority_count)
-    if A.keywords.startswith('mobile'):
+    if basename.startswith('mobile'):
         branddict = read_json(A.branddict)
         modeldict = read_json(A.modeldict)
         combine = resolve_dup_mobile(combine, attributes, majority_count, branddict, modeldict)
     else:
         combine = resolve_dup(combine, attributes, majority_count)
 
-    dirname, basename = os.path.split(A.keywords)
     filename = 'data/{}_combine.csv'.format(basename.split('_')[0])
     print("Writing prediction to {} ... ".format(filename))
     for k, v in combine.items():
-        new_df[k] = list(v)
-    new_df.to_csv(filename, index=False)
+        combine[k] = list(v)
+    combine.to_csv(filename, index=False)
 
     return
 
