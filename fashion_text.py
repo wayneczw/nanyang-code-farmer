@@ -1,3 +1,4 @@
+import gc
 import json
 import logging
 import numpy as np
@@ -437,7 +438,7 @@ def main():
         print(y)
         print('='*50)
         title_vec = CountVectorizer(
-            max_features=20000,
+            max_features=30000,
             strip_accents='unicode',
             stop_words='english',
             analyzer='word',
@@ -533,6 +534,14 @@ def main():
         train_dict['weights_prefix'] = y
         model = train(**train_dict)
 
+        for k in ['X_title_train', 'X_translated_train', 'X_nouns_train', 'X_numbers_train', 'X_title_val', 'X_translated_val', 'X_nouns_val', 'X_numbers_val', 'model', 'y_train', 'y_val', 'weights_prefix']:
+            try:
+                del train_dict[k]
+            except KeyError:
+                pass
+        #end for
+        gc.collect()
+
         test_dict['model'] = model
         test_dict['lb'] = lb_dict[y]
         test_dict['mapping'] = mapping_dict[y]
@@ -543,12 +552,22 @@ def main():
         test_dict['X_numbers_test'] = numbers_vec.transform(test_df['numbers'].values).toarray()
         # test_dict['X_cont_test'] = test_df[continuous_features].values
 
+        del title_vec, translated_vec, nouns_vec, numbers_vec
+        gc.collect()
+
         test_df[y] = test(**test_dict)
+        for k in ['X_title_test', 'X_translated_test', 'X_nouns_test', 'X_numbers_test', 'model', 'lb', 'mapping']:
+            del test_dict[k]
+        #end for
+
+        del model
+        gc.collect()
+
     #end for
 
     # test_df.to_csv('./data/fashion_test_proba.csv', index=False)
 
-    test_df.to_csv('./data/full_t_fashion_test_proba.csv', index=False)
+    test_df.to_csv('./data/full_t_30000_fashion_test_proba.csv', index=False)
 #end def
 
 
