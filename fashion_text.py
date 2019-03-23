@@ -437,7 +437,7 @@ def main():
         print(y)
         print('='*50)
         title_vec = CountVectorizer(
-            max_features=20000,
+            max_features=30000,
             strip_accents='unicode',
             stop_words='english',
             analyzer='word',
@@ -548,7 +548,7 @@ def main():
 
     # test_df.to_csv('./data/fashion_test_proba.csv', index=False)
 
-    test_df.to_csv('./data/full_t_fashion_test_proba.csv', index=False)
+    test_df.to_csv('./data/full_t_30000_fashion_test_proba.csv', index=False)
 #end def
 
 

@@ -1,81 +1,46 @@
 ⇒  python -m beauty_text -i processed_data/combined/beauty_train_processed_combined_processed.csv -t processed_data/combined/beauty_val_processed_combined_processed.csv -m data/beauty_profile_train.json
 Using TensorFlow backend.
-2019-03-19 08:29:49,249 [__main__-92574] INFO: Reading in data from processed_data/combined/beauty_train_processed_combined_processed.csv....
-2019-03-19 08:29:58,131 [__main__-92574] INFO: Done reading in 286583 data....
-2019-03-19 08:29:58,131 [__main__-92574] INFO: Reading in data from processed_data/combined/beauty_val_processed_combined_processed.csv....
-2019-03-19 08:30:00,246 [__main__-92574] INFO: Done reading in 76545 data....
-2019-03-19 08:30:00,864 [__main__-92574] INFO: Encoding labels....
-2019-03-19 08:30:04,932 [__main__-92574] INFO: Done encoding labels....
+2019-03-22 23:00:51,422 [__main__-8407] INFO: Reading in data from processed_data/combined/beauty_train_processed_combined_processed.csv....
+2019-03-22 23:00:54,828 [__main__-8407] INFO: Done reading in 286583 data....
+2019-03-22 23:00:54,828 [__main__-8407] INFO: Reading in data from processed_data/combined/beauty_val_processed_combined_processed.csv....
+2019-03-22 23:00:55,416 [__main__-8407] INFO: Done reading in 76545 data....
+2019-03-22 23:00:55,416 [__main__-8407] INFO: Encoding labels....
+2019-03-22 23:00:59,526 [__main__-8407] INFO: Done encoding labels....
 ==================================================
 Benefits
 ==================================================
-2019-03-19 08:30:20.557151: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
-Epoch 1/16
-400/400 [==============================] - 295s 737ms/step - loss: 0.4355 - acc: 0.8467 - val_loss: 0.3508 - val_acc: 0.8700
-
-Epoch 00001: val_loss improved from inf to 0.35076, saving model to ./weights/Benefits_0.86997_0.84656_0001.weights.h5
-Epoch 2/16
-400/400 [==============================] - 308s 770ms/step - loss: 0.2796 - acc: 0.8940 - val_loss: 0.3488 - val_acc: 0.8740
-
-Epoch 00002: val_loss improved from 0.35076 to 0.34876, saving model to ./weights/Benefits_0.87401_0.89409_0002.weights.h5
-Epoch 3/16
-400/400 [==============================] - 4179s 10s/step - loss: 0.2394 - acc: 0.9087 - val_loss: 0.3621 - val_acc: 0.8698
-
-Epoch 00003: val_loss did not improve from 0.34876
-Epoch 00003: early stopping
+2019-03-22 23:01:17.026241: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+Epoch 1/2
+444/444 [==============================] - 437s 985ms/step - loss: 0.4220 - acc: 0.8523
+/Users/wayneczw/ndsc_data/venv/lib/python3.5/site-packages/keras/callbacks.py:434: RuntimeWarning: Can save best model only with val_loss available, skipping.
+  'skipping.' % (self.monitor), RuntimeWarning)
+Epoch 2/2
+444/444 [==============================] - 448s 1s/step - loss: 0.2658 - acc: 0.8988
 ==================================================
 Brand
 ==================================================
-Epoch 1/16
-838/838 [==============================] - 701s 837ms/step - loss: 0.2264 - acc: 0.9655 - val_loss: 0.0595 - val_acc: 0.9873
-
-Epoch 00001: val_loss improved from inf to 0.05949, saving model to ./weights/Brand_0.98729_0.96552_0001.weights.h5
-Epoch 2/16
-838/838 [==============================] - 696s 830ms/step - loss: 0.0266 - acc: 0.9941 - val_loss: 0.0582 - val_acc: 0.9888
-
-Epoch 00002: val_loss improved from 0.05949 to 0.05821, saving model to ./weights/Brand_0.98881_0.99405_0002.weights.h5
-Epoch 3/16
-838/838 [==============================] - 2708s 3s/step - loss: 0.0165 - acc: 0.9962 - val_loss: 0.0625 - val_acc: 0.9883
-
-Epoch 00003: val_loss did not improve from 0.05821
-Epoch 00003: early stopping
+Epoch 1/2
+931/931 [==============================] - 1017s 1s/step - loss: 0.2121 - acc: 0.9686
+Epoch 2/2
+931/931 [==============================] - 1003s 1s/step - loss: 0.0248 - acc: 0.9944
 ==================================================
 Colour_group
 ==================================================
-Epoch 1/16
-427/427 [==============================] - 326s 764ms/step - loss: 0.6250 - acc: 0.8299 - val_loss: 0.4155 - val_acc: 0.8740
-
-Epoch 00001: val_loss improved from inf to 0.41550, saving model to ./weights/Colour_group_0.87396_0.82984_0001.weights.h5
-Epoch 2/16
-427/427 [==============================] - 324s 758ms/step - loss: 0.3114 - acc: 0.8976 - val_loss: 0.4218 - val_acc: 0.8736
-
-Epoch 00002: val_loss did not improve from 0.41550
-Epoch 00002: early stopping
+Epoch 1/2
+474/474 [==============================] - 475s 1s/step - loss: 0.6016 - acc: 0.8376
+Epoch 2/2
+474/474 [==============================] - 464s 980ms/step - loss: 0.2938 - acc: 0.9041
 ==================================================
 Product_texture
 ==================================================
-Epoch 1/16
-859/859 [==============================] - 657s 765ms/step - loss: 0.0816 - acc: 0.9789 - val_loss: 0.0421 - val_acc: 0.9878
-
-Epoch 00001: val_loss improved from inf to 0.04208, saving model to ./weights/Product_texture_0.98778_0.97888_0001.weights.h5
-Epoch 2/16
-859/859 [==============================] - 627s 730ms/step - loss: 0.0240 - acc: 0.9924 - val_loss: 0.0449 - val_acc: 0.9872
-
-Epoch 00002: val_loss did not improve from 0.04208
-Epoch 00002: early stopping
+Epoch 1/2
+955/955 [==============================] - 934s 978ms/step - loss: 0.0795 - acc: 0.9800
+Epoch 2/2
+955/955 [==============================] - 919s 963ms/step - loss: 0.0224 - acc: 0.9928
 ==================================================
 Skin_type
 ==================================================
-Epoch 1/16
-206/206 [==============================] - 160s 777ms/step - loss: 0.6701 - acc: 0.7923 - val_loss: 0.4960 - val_acc: 0.8436
-
-Epoch 00001: val_loss improved from inf to 0.49597, saving model to ./weights/Skin_type_0.84358_0.79221_0001.weights.h5
-Epoch 2/16
-206/206 [==============================] - 161s 781ms/step - loss: 0.3569 - acc: 0.8814 - val_loss: 0.5121 - val_acc: 0.8441
-
-Epoch 00002: val_loss did not improve from 0.49597
-Epoch 3/16
-206/206 [==============================] - 158s 767ms/step - loss: 0.2738 - acc: 0.9079 - val_loss: 0.5398 - val_acc: 0.8405
-
-Epoch 00003: val_loss did not improve from 0.49597
-Epoch 00003: early stopping
+Epoch 1/2
+229/229 [==============================] - 227s 993ms/step - loss: 0.6459 - acc: 0.8012
+Epoch 2/2
+229/229 [==============================] - 232s 1s/step - loss: 0.3300 - acc: 0.8912
