@@ -1,9 +1,10 @@
+import gc
+import json
 import logging
 import numpy as np
 import pandas as pd
 import random
 import tensorflow as tf
-import json
 
 from argparse import ArgumentParser
 
@@ -17,7 +18,8 @@ from keras.layers import Input
 from keras.layers import concatenate
 from keras.models import Model
 
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelBinarizer
 
@@ -458,7 +460,7 @@ def main():
         print(y)
         print('='*50)
         title_vec = CountVectorizer(
-            max_features=30000,
+            max_features=40000,
             strip_accents='unicode',
             stop_words='english',
             analyzer='word',
@@ -554,6 +556,13 @@ def main():
         train_dict['weights_prefix'] = y
 
         model = train(**train_dict)
+        for k in ['X_title_train', 'X_nouns_train', 'X_numbers_train', 'X_title_val', 'X_nouns_val', 'X_numbers_val', 'model', 'y_train', 'y_val', 'weights_prefix']:
+            try:
+                del train_dict[k]
+            except KeyError:
+                pass
+        #end for
+        gc.collect()
 
         test_dict['model'] = model
         test_dict['lb'] = lb_dict[y]
@@ -565,7 +574,16 @@ def main():
         test_dict['X_numbers_test'] = numbers_vec.transform(test_df['numbers'].values).toarray()
         # test_dict['X_cont_test'] = test_df[continuous_features].values
 
+        del title_vec, nouns_vec, numbers_vec
+        gc.collect()
+
         test_df[y] = test(**test_dict)
+        for k in ['X_title_test', 'X_nouns_test', 'X_numbers_test', 'model', 'lb', 'mapping']:
+            del test_dict[k]
+        #end for
+
+        del model
+        gc.collect()
     #end for
 
     test_df.to_csv('./data/full_30000_beauty_test_proba.csv', index=False)

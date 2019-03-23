@@ -1,3 +1,4 @@
+import gc
 import json
 import logging
 import numpy as np
@@ -648,6 +649,13 @@ def main():
             train_dict['y_val'] = train_dict['y_' + y + '_val']
         train_dict['weights_prefix'] = y
         model = train(**train_dict)
+        for k in ['X_title_train', 'X_nouns_train', 'X_numbers_train', 'X_brand_train', 'X_model_train', 'X_title_val', 'X_nouns_val', 'X_numbers_val', 'X_brand_val', 'X_model_val', 'model', 'y_train', 'y_val', 'weights_prefix']:
+            try:
+                del train_dict[k]
+            except KeyError:
+                pass
+        #end for
+        gc.collect()
 
         test_dict['model'] = model
         test_dict['lb'] = lb_dict[y]
@@ -669,7 +677,19 @@ def main():
                 models = lb_dict['Phone Model'].transform(models)
                 test_dict['X_model_test'] = models
 
+        del title_vec, nouns_vec, numbers_vec
+        gc.collect()
+
         test_df[y] = test(**test_dict)
+        for k in ['X_title_test', 'X_nouns_test', 'X_numbers_test', 'X_brand_test', 'X_model_test', 'model', 'lb', 'mapping']:
+            try:
+                del test_dict[k]
+            except KeyError:
+                pass
+        #end for
+
+        del model
+        gc.collect()
     #end for
 
     test_df.to_csv('./data/full_30000_mobile_test_proba.csv', index=False)
